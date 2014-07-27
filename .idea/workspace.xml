@@ -71,7 +71,7 @@
         <entry file="file://$PROJECT_DIR$/gmail/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.32605305" vertical-offset="76" max-vertical-offset="1102">
-              <caret line="19" column="46" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
+              <caret line="19" column="75" selection-start-line="19" selection-start-column="75" selection-end-line="19" selection-end-column="75" />
               <folding />
             </state>
           </provider>
@@ -909,7 +909,7 @@
     <entry file="file://$PROJECT_DIR$/gmail/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.32605305" vertical-offset="76" max-vertical-offset="1102">
-          <caret line="19" column="46" selection-start-line="19" selection-start-column="46" selection-end-line="19" selection-end-column="46" />
+          <caret line="19" column="75" selection-start-line="19" selection-start-column="75" selection-end-line="19" selection-end-column="75" />
           <folding />
         </state>
       </provider>
