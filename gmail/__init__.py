@@ -14,10 +14,10 @@ class Auth:
     #         redirect_uri='http://localhost:9000/oauth2callback')
 
     flow = OAuth2WebServerFlow(
-            client_id='864339645094-rii2aqr2jm20k63hf6jjt2pr7c6qku31.apps.googleusercontent.com',
-            client_secret='nT3ebkSkWSUGdob-yfxNdCGC',
-            scope='https://www.googleapis.com/auth/gmail.readonly email',
-            redirect_uri='http://rdtcontactapp.herokuapp.com/oauth2callback')
+        client_id='864339645094-rii2aqr2jm20k63hf6jjt2pr7c6qku31.apps.googleusercontent.com',
+        client_secret='nT3ebkSkWSUGdob-yfxNdCGC',
+        scope='https://www.googleapis.com/auth/gmail.readonly email image displayName',
+        redirect_uri='http://rdtcontactapp.herokuapp.com/oauth2callback')
 
     @staticmethod
     def get_auth_url():
