@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Inbox | {{user.email}}</title>
+	<link rel="stylesheet" href='/static/css/style.css' type="text/css"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src='/static/angular.min.js'></script>
+	<script src='/static/angular-touch.min.js'></script>
+	<script src='/static/_common.js'></script>
+	<style type="text/css">
+
+	</style>
+</head>
+<body ng-app="app">
+	<div ng-controller="ctrl">
+		<div style="padding:5px 16px;background:#f2f2f2;">
+			<img src="{{user.image_url}}" style="margin-top: -6px;">
+			<div style="display:inline-block;padding:5px 0 0 4px;">
+				<h4>{{user.name}}</h4>
+				<div>{{user.email}}</div>
+			</div>
+		</div>
+		<div>
+			<busy show='showBusy'>
+				<div style="text-align:center;">Loading...</div>
+			</busy>
+			<div style="display:inline-block;width:60%">
+				<ul class="ctgry-lst">
+					<li ng-repeat="c in ctgrys" ng-class="{sele:seleCtgrys.indexOf(c) > -1}"  ng-click="toggleCtrgy(c)">{[c]}</li>
+				</ul>
+				<table id="zone">
+					<tr ng-repeat="z in zones">
+						<td class="head">{[z]}</td>
+						<td>
+							<ul class="cnt-lst">
+								<li ng-repeat="h in contacts|filter:{status:0, zone:$index}">
+									<div class="name" title="{[h.email]}" ng-click="getMails(h)">{[h.name]}</div>
+									<a class="remove" title="unfollow" ng-click="updateStatus(h,1)">x</a>
+								</li>
+							</ul>
+						</td>
+					</tr>
+					<tr>
+						<td class="head">Removed</td>
+						<td>
+							<ul class="cnt-lst">
+								<li ng-repeat="h in contacts|filter:{status:1}">
+									<div class="name" title="{[h.email]}" ng-click="getMails(h)">{[h.name]}</div>
+									<a class="remove" title="unfollow" ng-click="updateStatus(h,0)">+</a>
+								</li>
+							</ul>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div style="display:inline-block;width:39%;float:right;padding:10px 20px 0 0">
+				<div>
+					<button class="btn btn-primary" ng-click="refreshInbox()"><span class="glyphicon glyphicon-repeat"></span> Refresh</button>
+					<button class="btn btn-gray" ng-click="importInbox()"><span class="glyphicon glyphicon-save"></span> Import</button>
+				</div>
+				<hr>
+				<ul id="mailTab">
+					<li ng-class="{sele:contact==null}" ng-click="showRecent()"><a class="name">Recent Mails</a></li>
+					<li ng-repeat="c in seleContacts" ng-class="{sele:c.id==contact.id}"> <a ng-click="getMails(c)" class="name">{[c.name]}</a><a class="remove" ng-click="removeContact(c)">x</a></li>
+				</ul>
+				<div class="mailLst">
+					
+					<table>
+						<tr ng-class="{hide:contact==null}"><td colspan="3" style="padding-left:10px;color: #59d;font-size: 13px;"><span class="glyphicon glyphicon-envelope"></span> {[contact.email]}</td></tr>
+						<tr ng-repeat="m in mails">
+							<td class="folder">{[m.folder]}</td>
+							<td class="date"><a target="blank" href="{[m.url]}">{[m.date | date_mdy]}</a></td>
+							<td><a class="subject" target="blank" href="{[m.url]}"> {[m.subject]} </a></td>
+						</tr>
+					</table>
+				</table>
+
+			</div>
+		</div>
+	</div>
+</body>
+</html>
