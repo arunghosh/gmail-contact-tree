@@ -14,28 +14,52 @@
 </head>
 <body ng-app="app">
 	<div ng-controller="ctrl">
-		<div style="padding:5px 16px;background:#f2f2f2;">
-			<img src="{{user.image_url}}" style="margin-top: -6px;">
-			<div style="display:inline-block;padding:5px 0 0 4px;">
-				<h4>{{user.name}}</h4>
-				<div>{{user.email}}</div>
-			</div>
+		<div id="banner">
+			<img src="{{user.image_url}}">
+			<ul style="display:inline-block;padding:5px 0 0 4px;">
+				<li><h6>{[user.name]}</h6></li>
+				<li style="color:#555;"><span class="glyphicon glyphicon-envelope"></span> {[user.email]}</li>
+				<li style="color:#999;" >
+					<span class="glyphicon glyphicon-phone"></span> <span ng-hide="mobileEdit">{[user.phone]} <span class="glyphicon glyphicon-edit btn-icon" ng-click="mobileEdit=true"></span></span> 
+					<span ng-show="mobileEdit"><input type="text" ng-model="user.phone"> <span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateMobile()"></span></span>
+				</li>
+				<!-- <li ng-show="user.ln_count==0"><a href="/lkdn"><span class="glyphicon glyphicon-download-alt"></span> Import from Linkdin</a></li> -->
+			</ul>
 		</div>
 		<div>
 			<busy show='showBusy'>
-				<div style="text-align:center;">Loading...</div>
+				<div style="text-align:center;">{[busyText]}</div>
 			</busy>
-			<div style="display:inline-block;width:60%">
+			<div style="display:inline-block;width:50%;float:left">
 				<ul class="ctgry-lst">
+					<li ng-click="showZoneSet=!showZoneSet" ng-class={sele:showZoneSet}><span class="glyphicon glyphicon-cog"></span></li>
 					<li ng-repeat="c in ctgrys" ng-class="{sele:seleCtgrys.indexOf(c) > -1}"  ng-click="toggleCtrgy(c)">{[c]}</li>
 				</ul>
+				<div ng-show="showZoneSet">
+					<table id="zoneEdit">
+						<tr>
+							<td class="text">Safe</td>
+							<td><input type="number" ng-model="zone1"></td>
+						</tr>
+						<tr>
+							<td class="text">Danger</td>
+							<td><input type="number" ng-model="zone2"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td colspan="2">
+								<a class="flat-btn ft-r" style="margin:0 0 4px 0;" ng-click="updateZone()"> <span class="glyphicon glyphicon-floppy-disk" ></span> Save</a>
+							</td>
+						</tr>
+					</table>
+				</div>
 				<table id="zone">
 					<tr ng-repeat="z in zones">
 						<td class="head">{[z]}</td>
 						<td>
 							<ul class="cnt-lst">
 								<li ng-repeat="h in contacts|filter:{status:0, zone:$index}">
-									<div class="name" title="{[h.email]}" ng-click="getMails(h)">{[h.name]}</div>
+									<div class="name" title="{[h.email]} | {[h.mobile]}" ng-click="setContact(h)">{[h.name]} <span class="delta">{[h.delta]}</span></div>
 									<a class="remove" title="unfollow" ng-click="updateStatus(h,1)">x</a>
 								</li>
 							</ul>
@@ -46,7 +70,7 @@
 						<td>
 							<ul class="cnt-lst">
 								<li ng-repeat="h in contacts|filter:{status:1}">
-									<div class="name" title="{[h.email]}" ng-click="getMails(h)">{[h.name]}</div>
+									<div class="name" title="{[h.email]}" ng-click="setContact(h)">{[h.name]}</div>
 									<a class="remove" title="unfollow" ng-click="updateStatus(h,0)">+</a>
 								</li>
 							</ul>
@@ -54,22 +78,41 @@
 					</tr>
 				</table>
 			</div>
-			<div style="display:inline-block;width:39%;float:right;padding:10px 20px 0 0">
-				<div>
-					<button class="btn btn-primary" ng-click="refreshInbox()"><span class="glyphicon glyphicon-repeat"></span> Refresh</button>
-					<button class="btn btn-gray" ng-click="importInbox()"><span class="glyphicon glyphicon-save"></span> Import</button>
-				</div>
-				<hr>
-				<ul id="mailTab">
-					<li ng-class="{sele:contact==null}" ng-click="showRecent()"><a class="name">Recent Mails</a></li>
-					<li ng-repeat="c in seleContacts" ng-class="{sele:c.id==contact.id}"> <a ng-click="getMails(c)" class="name">{[c.name]}</a><a class="remove" ng-click="removeContact(c)">x</a></li>
+			<div style="display:inline-block;width:50%;">
+				<ul class="ctrl-lst">
+					<li ng-click="refreshInbox()"><span class="glyphicon glyphicon-repeat"></span> Refresh</li><li ng-click="importInbox()"><span class="glyphicon glyphicon-save"></span> Import</li>
 				</ul>
-				<div class="mailLst">
-					
-					<table>
-						<tr ng-class="{hide:contact==null}"><td colspan="3" style="padding-left:10px;color: #59d;font-size: 13px;"><span class="glyphicon glyphicon-envelope"></span> {[contact.email]}</td></tr>
+				<div id="statusMsg">{[statusMsg]}</div>
+				<ul id="mailTab">
+					<li ng-class="{sele:contact==null}" ng-click="showRecent()"><a class="name">Recent Mails</a></li><li ng-repeat="c in seleContacts" ng-class="{sele:c.id==contact.id}"> <a ng-click="setContact(c)" class="name">{[c.name]}</a><a class="remove" ng-click="removeContact(c)">x</a></li>
+				</ul>
+				<div style="width:100%;"  class="mailLst">
+					<ul ng-class="{hide:contact==null}" class="mail-id">
+						<li>
+							<span class="glyphicon glyphicon-link"></span> {[contact.category]}
+							<span class="glyphicon glyphicon-edit btn-icon" ng-click="ctgryEdit=true" ng-hide="ctgryEdit"></span>
+							<ul class="ctgry-edit-lst" ng-show="ctgryEdit">
+								<li ng-repeat="c in ctgrys" ng-click="updateCtrgy(c)">{[c]}</li>
+								<li style="padding:0"><input placeholder="new category" type="text" ng-model="newCtgry"> <span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateCtrgy(newCtgry)"></span></li>
+							</ul>
+						</li>
+						<li>
+							<span class="glyphicon glyphicon-envelope"></span> {[contact.email]}
+						</li>
+						<li>
+							<span class="glyphicon glyphicon-phone"></span> {[contact.mobile]}
+						</li>
+					</ul>
+					<table class="ln-dupe">
+						<tr ng-repeat="l in lnDupes">
+							<td class="img"><img src="{[l.image_url]}"></div>
+							<td><a href="{[l.profile_url]}" class="name" target="_blank">{[l.name]}</a><div class="dim">{[l.headline]}</div></div>
+						</tr>
+					</table>
+					<table>						
 						<tr ng-repeat="m in mails">
-							<td class="folder">{[m.folder]}</td>
+							<td class="folder dim">{[m.folder]}</td>
+							<td class="name"><a target="blank" href="{[m.url]}">{[m.name]}</a></td>
 							<td class="date"><a target="blank" href="{[m.url]}">{[m.date | date_mdy]}</a></td>
 							<td><a class="subject" target="blank" href="{[m.url]}"> {[m.subject]} </a></td>
 						</tr>

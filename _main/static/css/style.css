@@ -7,6 +7,9 @@
 	src: url(/static/fonts/swz.woff);
 }
 
+input:focus{
+	outline: 0;
+}
 
 input[type=text], input[type=url], input[type=email], textarea, input[type=number], input[type=password]
 {
@@ -54,6 +57,13 @@ h4{
 	font-size: 20px;
 }
 
+h6{
+	font-weight: bold;
+	color: #444;
+	font-size: 12px;
+	margin: 2px 0;
+	padding: 0;
+}
 .add-btn{
 	font-size: 16px;
 	color: #19f;
@@ -94,12 +104,12 @@ h4{
 }
 
 .btn {
-padding: 6px 20px 4px 20px;
-font-size: 13px;
-border: none;
-background-image: none;
-border-radius: 0px;
-text-shadow: none;
+	padding: 6px 20px 4px 20px;
+	font-size: 13px;
+	border: none;
+	background-image: none;
+	border-radius: 0px;
+	text-shadow: none;
 }
 
 .company-list .head
@@ -143,6 +153,7 @@ label{
 body
 {
 	color:#494949;
+	background: #fbfbfb;
 	margin:0;
 	font-size: 12px;
 	padding:0;
@@ -311,6 +322,9 @@ form .ctnr{
 	-moz-transform: translate(-50%, -50%);
 	background-color: #fff;
 	box-shadow: 4px 4px 80px rgba(0,0,0,.2);
+	color: #444;
+	font-weight:bold;
+	font-size: 13px; 
 }
 .ng-modal-dialog-content {
 	padding:10px 20px;
@@ -366,7 +380,7 @@ form .ctnr{
 	padding: 5px 10px;
 	margin: 1px;
 }
-.dim{color: #999;}
+.dim{color: #aaa!important;}
 .ft-r{float: right}
 .mob-day-details ul{
 	list-style-type: none;
@@ -410,7 +424,7 @@ form .ctnr{
 	font-size: 13px;
 	font-weight: bold;
 	padding-left:4px; 
-	color: #ccc;
+	color: #ddd;
 }
 
 .cnt-lst .remove:hover{
@@ -420,6 +434,15 @@ form .ctnr{
 
 .cnt-lst .name:hover{
 	color: #444;
+}
+.cnt-lst .delta{
+	color: #ddd;
+	font-size: 11px;
+	padding: 0 0 0 2px;
+}
+
+.cnt-lst .delta:hover{
+	color: #08e;
 }
 .cnt-lst .name{
 	max-width: 325px;
@@ -433,14 +456,15 @@ form .ctnr{
 	color: #999;
 }
 .cnt-lst li{
-display: inline-block;
-background: #fff;
-padding: 1px 9px;
-margin: 2px 3px 3px 2px;
-height: 21px;
-color: #777;
-cursor: pointer;
-border-radius: 9px;
+	display: inline-block;
+	background: #fbfbfb;
+	padding: 0px 13px;
+	margin: 2px 3px 3px 2px;
+	height: 21px;
+	color: #888;
+	cursor: pointer;
+	border-radius: 20px;
+	border: 1px solid #e9e9e9;
 } 
 .cnt-lst{ 
 	list-style-type: none;
@@ -472,15 +496,26 @@ ul{
 	width: 80px;
 	/*vertical-align: middle;*/
 }
+
+.mailLst .mail-id{font-size: 13px;color: #59d;}
+.mailLst .mail-id > li{border-bottom: 1px dotted #ddd;padding:0px 10px 4px 10px;}
+.mailLst .glyphicon{font-size: 11px; color: #555;margin-right: 5px;}
 .mailLst{
-background: #fff;
-height: 400px;
-overflow: scroll;
-overflow-x:hidden; 
-border: 1px solid #eee;
-border-top:none; 
-padding: 10px 0 0 0;
-display: inline-block;
+	width: 100%;
+}
+.mailLst table{
+	width: 100%;
+}
+
+.mailLst{
+	background: #fff;
+	height: 400px;
+	overflow: scroll;
+	overflow-x:hidden; 
+	border: 1px solid #eee;
+	border-top:none; 
+	padding: 10px 0 0 0;
+	display: inline-block;
 }
 .mailLst .date {
 }
@@ -515,7 +550,7 @@ display: inline-block;
 	border-bottom: 1px dotted #ddd;
 }
 .mailLst td{
-	padding: 2px 5px 1px 5px;
+	padding: 3px 5px 2px 0;
 }
 h4{
 	font-size: 14px;
@@ -536,62 +571,224 @@ h5{
 	text-decoration: none;
 }
 #mailTab li{
-cursor: pointer;
-color: #555;
-border: 1px solid #ddd;
-border-bottom: none;
-display: inline-block;
-border-radius: 3px 3px 0 0;
-border-right: none;
-}
-	#mailTab .name{
-		padding: 7px 10px 0 10px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: 100px;
-		white-space: nowrap;
-		display: inline-block;
-		color: #999;
-	}
-
-	#mailTab .remove:hover{
-		color: #c55;
-	}
-	#mailTab .remove{
-float: right;
-padding: 4px 8px 0 3px;
-font-weight: bold;
-font-size: 14px;
-color: #999;
-	}
-	#mailTab li.sele{
-		background: #fff;
-		color: #777;
-border-right: 1px solid #eee;
-	}
-
-	#mailTab li.sele > .name{
-		color: #555;
-	}
-
-	.hide{display: none;}
-.ctgry-lst {
-	background: #eee;
+	cursor: pointer;
+	color: #555;
+	border: 1px solid #eee;
+	border-bottom: none;
+	display: inline-block;
+	border-right: none;
+	border-right: 1px solid #fff;
 	border-top:1px solid #fff;
+}
+#mailTab .name{
+	padding: 7px 10px 0 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100px;
+	white-space: nowrap;
+	display: inline-block;
+	color: #999;
+}
+
+#mailTab .remove:hover{
+	color: #c55;
+}
+#mailTab .remove{
+	float: right;
+	padding: 4px 8px 0 3px;
+	font-weight: bold;
+	font-size: 14px;
+	color: #ccc;
+}
+#mailTab li.sele{
+	background: #fff;
+	color: #777;
+	border-top: 1px solid #d0d0d0;
+	border-left: 1px solid #e0e0e0;
+}
+
+#mailTab li.sele > .name{
+	color: #555;
+}
+
+.hide{display: none;}
+.ctgry-lst {
+	background: #a0a0a0;
+	border:1px solid #fff;
+	border-width: 1px 1px 0 0;
+	border-right-color: #bbb;
+
+}
+
+.ctgry-lst li:hover{
+	color: #000;
 }
 
 .ctgry-lst li{
-display: inline-block;
-padding: 3px 15px;
-border: 1px solid rgba(0,0,0,.08);
-text-transform: capitalize;
-font-size: 11px;
-color: #ccc;
-background: #999;
-cursor: pointer;
-border-left: 1px solid rgba(255,255,255,.3);
+	display: inline-block;
+	width: 81px;
+	padding: 6px 4px 2px 4px;
+	text-transform: capitalize;
+	color: #888;
+	cursor: pointer;
+	border-right: 1px solid #bbb;
+	margin: 0 1px 0 0;
+	text-align: center;
 }
 .ctgry-lst li.sele{
-	background: #59b;
-	color: #fff;
+	color: #f9f9f9;
+}
+
+.flat-btn:hover{
+	background: #19f;
+	text-decoration: none;
+}
+.flat-btn{
+	padding: 6px 22px 2px 22px;
+	display: inline-block;
+	cursor: pointer;
+	background: #4af;
+	color: #fff;	
+}
+
+.flat-btn .glyphicon{
+	padding: 0 5px;
+	font-size: 11px;
+}
+
+#statusMsg{
+	color: #666;
+	margin: 1px 0px;
+	height: 24px;
+	background: #f9f9f9;
+	padding: 4px 11px;
+}
+
+.ctrl-lst li:hover{
+	background: #19f;
+}
+.ctrl-lst li{
+	padding: 6px 22px 2px 22px;
+	border-right: 1px solid rgba(255,255,255,.5);
+	display: inline-block;
+	cursor: pointer;
+	background: #4af;
+	color: #fff;	
+}
+.ctrl-lst{
+	background: #eee;
+	border: 1px solid #fff;
+	border-width: 1px 0 0 0;
+	list-style-type: none;
+	font-size: 12px;
+}
+.ctrl-lst .glyphicon{
+	padding: 0 5px;
+	font-size: 11px;
+}
+.ln-dupe .name{
+	color: #777;
+	font-weight: bold;
+}
+.ln-dupe{
+	width: 100%;
+}
+.ln-dupe td{
+	padding: 5px 0px 5px 10px;
+}
+.ln-dupe img{
+	width: 50px;
+}
+.ln-dupe .img{
+	width: 50px;
+}
+
+.ln-dupe tr{
+	vertical-align: top;
+	border-bottom: 1px dotted #ddd;
+}
+
+#banner{
+	padding:5px 30px;background:#fcfcfc;
+	line-height: 22px;
+}
+
+#banner input{
+	display: inline-block;
+	padding: 0px 7px;
+	line-height: 20px;
+	height: 21px;
+	width: 130px;
+	color: #888;
+}
+#banner .glyphicon{
+	font-size: 11px;
+	color: #d83;
+}
+
+#banner li{
+	list-style-type: none;
+	border-bottom: 1px dotted #ccc;
+}
+#banner img{
+	margin-top: 7px;
+	vertical-align: top;
+	box-shadow: 1px 1px 2px 0px rgba(0,0,0,.5);
+}
+.btn-icon:hover{
+	color: #444!important;
+}
+
+.btn-icon{
+	font-size: 12px;
+	color: #bbb!important;
+	padding: 2px 5px;
+	cursor: pointer;
+}
+#banner .btn-icon{
+	padding: 2px 5px;
+}
+
+.ctgry-edit-lst input{
+	display: inline-block;
+	width: 130px;
+	padding: 0px 10px;
+	line-height: 20px;
+	height: 21px;
+	border:none;
+	box-shadow: none;
+
+}
+.ctgry-edit-lst li{
+display: inline-block;
+border: 1px solid #eee;
+cursor: pointer;
+padding: 2px 10px;
+color: #999;
+text-transform: capitalize;
+text-align: center;
+min-width: 50px;
+margin: 1px;}
+
+#zoneEdit input{
+border-radius: 0;
+width: 96px;
+padding: 1px 8px;
+line-height: 21px;
+height: 22px;
+box-shadow: none;
+border-color: #eee;
+}
+
+#zoneEdit td{
+	border:0;
+	padding: 4px 0 0 0;
+}
+
+#zoneEdit .text{
+	text-align: right;
+	color: #888;
+	padding: 2px 5px 0px 10px;
+	min-width: 80px;
+	vertical-align: bottom;
 }

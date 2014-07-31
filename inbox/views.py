@@ -9,14 +9,14 @@ from .models import MailContact
 from contact.models import UserContact
 
 
-class ContactsView(APIView):
-
-    def get(self, request):
-        user = request.user
-        contacts = user.usercontact_set.all()
-        contacts.sort(key=lambda x: x.last_contacted_on, reverse=True)
-        slz = ContactSerializer(contacts, many=True)
-        return Response(slz.data)
+# class ContactsView(APIView):
+#
+#     def get(self, request):
+#         user = request.user
+#         contacts = user.usercontact_set.all()
+#         contacts.sort(key=lambda x: x.last_contacted_on, reverse=True)
+#         slz = ContactSerializer(contacts, many=True)
+#         return Response(slz.data)
 
 
 class MailListView(APIView):

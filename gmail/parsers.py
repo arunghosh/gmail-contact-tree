@@ -6,7 +6,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from inbox.models import ImportSession, MailContact, MailMessage, MailContactMap
 from contact.models import UserContact
 from apiclient.discovery import build
+
 from . import Auth
+from contact import MailDirection
 
 
 class InboxImport:
@@ -14,7 +16,7 @@ class InboxImport:
         self.user = user
         self.service = Auth.get_gmail_srv(user)
         self.count = 0
-        self.max_count = 15
+        self.max_count = 9
         self.is_refresh = False
         self.can_import = True
 
@@ -64,6 +66,9 @@ class ContactsImport:
         self.response = response.strip()
         self.type = type
         self.user = user
+        ids = self.response.strip().split('>,')
+        self.contacts = [self.__get_contact(m) for m in ids]
+
 
     def __get_contact(self, resp):
         resp = resp.replace(';', '').replace('>', '').replace('"', '').replace("'", "")
@@ -87,9 +92,7 @@ class ContactsImport:
         return contact
 
     def save(self):
-        ids = self.response.strip().split('>,')
-        contacts = [self.__get_contact(m) for m in ids]
-        for c in [c for c in contacts if c.email != self.user.email and len(c.email) > 4]:
+        for c in [c for c in self.contacts if c.email != self.user.email and len(c.email) > 4]:
             c = self.__save_contact(c)
             contact_mail = MailContactMap()
             contact_mail.mail_contact = c
@@ -116,8 +119,11 @@ class MailImport:
         except ObjectDoesNotExist:
             return False
 
-    def __add_contact_import(self, response, dir_type):
-        self.contact_imports.append(ContactsImport(response, dir_type, self.user, self.mail))
+    def __import_contacts(self, response, dir_type):
+        contact_in = ContactsImport(response, dir_type, self.user, self.mail)
+        if len([c for c in contact_in.contacts if c.email == self.user.email]):
+            self.mail.type = dir_type
+        self.contact_imports.append(contact_in)
 
     def __import_msg(self):
         self.mail_resp = self.service.users().messages().get(userId='me', id=self.mail.message_id).execute()
@@ -128,18 +134,14 @@ class MailImport:
         if None != self.mail_resp.get('labelIds'):
             labels = self.mail_resp['labelIds']
             self.mail.folder = labels[0].lower()
-            self.mail.category = labels[1].split("_")[-1].lower() if len(labels) > 1 else "na"
+            self.mail.category = labels[1].split("_")[-1].lower() if len(labels) > 1 else "personal"
 
     def __import_from_header(self):
         for head in self.mail_resp['payload']['headers']:
             name = head['name'].lower()
             value = head['value']
-            if name == 'from':
-                self.__add_contact_import(value, 2)
-            elif name == 'to':
-                self.__add_contact_import(value, 1)
-            elif name == 'cc':
-                self.__add_contact_import(value, 3)
+            if MailDirection.value(name):
+                self.__import_contacts(value, MailDirection.value(name))
             elif name == 'date':
                 if len(value) > 28:
                     self.mail.date = datetime.strptime(value[0:25].strip(), "%a, %d %b %Y %X")
@@ -147,6 +149,9 @@ class MailImport:
                     self.mail.date = datetime.strptime(value[0:20].strip(), "%d %b %Y %X")
             elif name == 'subject':
                 self.mail.subject = value
+        #this is handle mails to arun.ghosh@gmail.com
+        self.mail.type = self.mail.type if self.mail.type else MailDirection.TO
+
 
     def import_msg(self):
         if not self.__is_exist():

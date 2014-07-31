@@ -129,38 +129,68 @@ templateUrl: "/static/html/busy.html"
 app.filter("date_mdy", function() {
   return function(input) {
     var arr = input.replace("T","-").split("-");
-    var date = new Date(arr[0], arr[1], arr[2]);
+    var date = new Date(arr[0], arr[1] - 1, arr[2]);
     return date.toDateString().substring(4,15);
 };
 });
 
-// Filter API calls
 app.factory('api', function($http){
     return {
         updateStatus: function(cid, status){
-            return $http.post("/update_status/" + cid + "/" + status + "/");
+            return $http.post("contact/status/" + cid + "/" + status + "/");
         },
 
-        byZone : function(){
-            return $http.get('/by_zone/');
+        updateCtrgy: function(cid, ctgry){
+            return $http.post("contact/ctgry/" + cid + "/" + ctgry + "/");
+        },
+
+        contacts : function(){
+            return $http.get('contacts/');
         },
 
         mails : function(cid){
-            return $http.get('/mails/'+ cid + "/");
+            return $http.get('inbox/mails/'+ cid + "/");
         },
 
         refreshInbox : function(){
-            return $http.get('/refresh_inbox/');
+            return $http.get('inbox/refresh/');
         },
 
         importInbox : function(){
-            return $http.get('/import_inbox/');
+            return $http.get('inbox/import/');
         },
 
         recentMails : function(){
-            return $http.get('/recent_mails/');
+            return $http.get('inbox/recent/');
         },        
 
+        calls : function(cid){
+            return $http.get('mobile/calls/'+ cid + "/");
+        },
+
+        recentCalls : function(){
+            return $http.get('mobile/recent/');
+        },
+
+        lnDuplicates : function(cid){
+            return $http.get('lkdn/duplicates/'+ cid + "/");
+        },
+
+        zones : function(){
+            return $http.get('setting/zones');
+        },
+
+        updateZones : function(z1, z2){
+            return $http.post('setting/zones/', {'p1':z1,'p2':z2});
+        },
+
+        updateMobile : function(mobile){
+            return $http.post('update_mobile/' + mobile + "/")
+        },
+
+        userInfo : function(){
+            return $http.get('user_info')
+        },
     };
 });
 
@@ -179,18 +209,53 @@ Array.prototype.remove = function(item){
 };
 
 app.controller('ctrl', function($scope, api){
-    $scope.zones = ["Safe", "Inter", "Danger"];
-    $scope.mails = [];
-    $scope.showBusy = false;
-    $scope.masterContacts = [];
-    $scope.contacts = [];
-    $scope.seleContacts = [];
-    $scope.contact = null;
-    $scope.recentMails = [];
-    $scope.seleCtgrys = ['personal', 'na'];
+    function init()
+    {
+        $scope.zones = ["Safe", "Inter", "Danger"];
+        $scope.mails = [];
+        $scope.showBusy = false;
+        $scope.masterContacts = [];
+        $scope.contacts = [];
+        $scope.seleContacts = [];
+        $scope.recentMails = [];
+        $scope.seleCtgrys = ['personal', '--'];
+        $scope.busyText = "Loading....";
+        $scope.mobileEdit = false;
+        refreshContacts();
+        getRecentMails();
+        refreshInbox(false);
+        api.zones().success(function(result){
+            $scope.zone1 = result.p1;
+            $scope.zone2 = result.p2;
+        });
+
+        api.userInfo().success(function(result){
+            $scope.user = result;
+        })
+    }   
+
+    $scope.updateZone = function(){
+        api.updateZones($scope.zone1, $scope.zone2).success(function(){
+
+        });
+    };
+
+    $scope.updateCtrgy = function(ctgry){
+        api.updateCtrgy($scope.contact.id, ctgry).success(function(){
+            $scope.contact.category = ctgry;
+            $scope.ctgryEdit = false;
+            refreshContacts();
+        });
+    };
+
+    $scope.updateMobile = function(){
+        api.updateMobile($scope.user.phone).success(function(result){
+            $scope.mobileEdit = false;
+        });
+    };
 
     function refreshContacts(){
-        api.byZone().success(function(result){
+        api.contacts().success(function(result){
             $scope.contacts = result;
             $scope.masterContacts = result.slice();
             var ctgrys = result.map(function(c){
@@ -212,12 +277,19 @@ app.controller('ctrl', function($scope, api){
     }
 
     $scope.refreshInbox = function(){
-        $scope.showBusy = true;
+        refreshInbox(true);
+    }
+
+    function refreshInbox(showBusy)
+    {
+        $scope.showBusy = showBusy;
+        $scope.busyText = "Fetching latest mails....";
         api.refreshInbox().success(function(result){
-            $scope.showBusy = false;
-            if(result.count > 0) refreshContacts();
+            onImport(result);
         }).error(function(){
-            window.location = "/gmail/";
+            if(showBusy){
+                onAccessFail();
+            }
         });
     };
 
@@ -231,33 +303,61 @@ app.controller('ctrl', function($scope, api){
     };
 
     $scope.importInbox = function(){
+        $scope.showBusy = true;
+        $scope.busyText = "Importing Old Mails....";
         api.importInbox().success(function(result){
-            if(result.count > 0) refreshContacts();
+            onImport(result);
         }).error(function(){
-            window.location = "/gmail/";            
+            onAccessFail();    
         });
     };
+
+
+    function onAccessFail(){
+        $scope.busyText = "Access Failed. Refreshing GMAIL Access Token....";
+        window.location = "/gmail/";
+    }
+
+    function onImport(result){
+        $scope.statusMsg = result.count + " mails imported";
+        if(result.count > 0) {
+            refreshContacts();
+            getRecentMails();
+        }
+        $scope.showBusy = false;
+    }
 
     $scope.updateStatus = function(contact, status){
         api.updateStatus(contact.id, status).success(function(result){
             contact.status = status;
         });
-
     };
 
-    $scope.getMails = function(contact){
+    $scope.setContact = function(contact){
+       
         $scope.contact = contact;
         if(!$scope.seleContacts.contains(contact)){
             $scope.seleContacts.push(contact);
         }
+
+        api.lnDuplicates(contact.id).success(function(result){
+            $scope.lnDupes = result;
+        }); 
+
         api.mails(contact.id).success(function(result){
             setMails(result);
         });
+
+        api.calls(contact.id).success(function(result){
+            $scope.calls = result
+        });
+
     };
 
     $scope.showRecent = function(){
         $scope.mails = $scope.recentMails;
         $scope.contact = null;
+        $scope.lnDupes = [];
     };
 
     function setMails(mails){
@@ -279,9 +379,13 @@ app.controller('ctrl', function($scope, api){
         }
     }
 
-    refreshContacts();
-    api.recentMails().success(function(result){
-        setMails(result);
-        $scope.recentMails = result;
-    });
+    function getRecentMails(){
+        api.recentMails().success(function(result){
+            if($scope.contact == null) setMails(result);
+            $scope.recentMails = result;
+        });
+    }
+
+    init();
+
 });

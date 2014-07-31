@@ -1,3 +1,22 @@
 from django.shortcuts import render
+from common.views import JSONResponseMixin
+from django.views.generic.base import View
+from .models import UserContact
 
-# Create your views here.
+class UpdateMobile(JSONResponseMixin, View):
+
+    def post(self, request, mobile):
+        user = request.user
+        user.phone = mobile
+        print mobile
+        user.save()
+        return self.render_json_response({'status':True})
+
+
+class UpdateCtgry(JSONResponseMixin, View):
+
+    def post(self, request, cid, ctgry):
+        c = UserContact.objects.get(pk=cid)
+        c.category = ctgry
+        c.save()
+        return self.render_json_response({'status':True})

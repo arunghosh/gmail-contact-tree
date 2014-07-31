@@ -9,7 +9,7 @@ from .parsers import InboxImport
 
 
 def login(request):
-    return HttpResponseRedirect(Auth.get_auth_url())
+    return HttpResponseRedirect(Auth.get_auth_url() + "&approval_prompt=force")
 
 
 def callback(request):

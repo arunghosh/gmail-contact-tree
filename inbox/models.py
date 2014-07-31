@@ -19,6 +19,7 @@ class MailMessage(BaseModel):
     category = models.CharField(max_length=64, blank=True)
     user = models.ForeignKey(MyUser)
     subject = models.CharField(max_length=256)
+    type = models.SmallIntegerField()
 
     class Meta:
         unique_together = ('message_id', 'mail_client', 'user')

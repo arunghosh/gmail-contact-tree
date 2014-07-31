@@ -10,14 +10,8 @@ class MobileContact(BaseModel):
     remark = models.CharField(max_length=64, null=True, blank=True)
 
 
-class MobileMessage(BaseModel):
-    date = models.DateTimeField()
-    user = models.ForeignKey(MyUser)
-    mobile_contact = models.ForeignKey(MobileContact)
-
-
 class MobileCall(BaseModel):
+    is_call = models.BooleanField()
     duration = models.IntegerField()
     date = models.DateTimeField()
     mobile_contact = models.ForeignKey(MobileContact)
-    user = models.ForeignKey(MyUser)

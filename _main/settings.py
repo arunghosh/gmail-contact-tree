@@ -39,6 +39,8 @@ INSTALLED_APPS = (
     'auth',
     'contact',
     'inbox',
+    'lkdn',
+    'mobile',
 )
 
 MIDDLEWARE_CLASSES = (

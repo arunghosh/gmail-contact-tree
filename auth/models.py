@@ -11,7 +11,9 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=UserManager.normalize_email(email),
             image_url=image_url,
-            name=name)
+            name=name,
+            delta_safe=21,
+            delta_danger=42)
 
         user.set_password(password)
         user.save(using=self._db)

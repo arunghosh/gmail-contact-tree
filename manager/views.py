@@ -4,15 +4,17 @@ from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.views.generic.base import View
+
 from gmail.parsers import InboxImport
-from .serializer import ContactSerializer
+from .serializer import ContactSerializer,MyUserSerializer
 from . import ByZoneMgr
 from contact.models import UserContact
 from common.views import JSONResponseMixin
-
+import urllib2
 
 @login_required(login_url='/login')
 def home(request):
+    # print urllib2.urlopen("https://accounts.google.com/o/oauth2/token?&client_secret=wlX4AGzMC1YIS_aQdptABlJ2&grad_type=refreh_token&client_id=864339645094-6u7141gbiprre8u1r122e1tjkghk7ev9.apps.googleusercontent.com&access_type=offline&refreh_token=1/qJZsjrebHbcOKBN0F_lsDKt0Lzl07i1J151b4XtsMv4").read()
     return render(request, 'inbox_home.html')
 
 
@@ -54,3 +56,9 @@ class ImportInboxView(APIView):
         return Response({'count': result.count})
 
 
+class UserInfo(APIView):
+
+    def get(self, request):
+        user = request.user
+        slz = MyUserSerializer(user)
+        return Response(slz.data)
