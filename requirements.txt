@@ -8,8 +8,13 @@ enum34==1.0
 google-api-python-client==1.2
 gunicorn==19.1.0
 httplib2==0.9
+oauthlib==0.6.3
 psycopg2==2.5.3
+python-Levenshtein==0.11.2
 python-gflags==2.0
+python-linkedin==4.1
+requests==2.3.0
+requests-oauthlib==0.4.1
 static3==0.5.1
 urllib3==1.9
 wsgiref==0.1.2
