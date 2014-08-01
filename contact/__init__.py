@@ -2,6 +2,12 @@
 class ContactStatus:
     follow = 0
     not_follow = 1
+    merged = 2
+    removed = 3
+
+    @classmethod
+    def get_active(cls, user):
+        return user.usercontact_set.filter(status__lte=ContactStatus.not_follow)
 
 
 class MailDirection:

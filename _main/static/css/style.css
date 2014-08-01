@@ -11,6 +11,15 @@ input:focus{
 	outline: 0;
 }
 
+.pl-0{
+	padding-left: 0!important;
+}
+.success{
+	color: #5b7!important;
+}
+
+
+
 input[type=text], input[type=url], input[type=email], textarea, input[type=number], input[type=password]
 {
 	display: block;
@@ -29,6 +38,17 @@ input[type=text], input[type=url], input[type=email], textarea, input[type=numbe
 	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 
+.input-group-addon {
+padding: 0px 12px;
+font-size: 12px;
+font-weight: 400;
+line-height: 1;
+color: #888;
+text-align: center;
+background-color: #eee;
+border: 0px solid #ccc;
+border-radius: 0;
+}
 .bld
 {
 	font-weight:bold;
@@ -468,18 +488,17 @@ form .ctnr{
 } 
 .cnt-lst{ 
 	list-style-type: none;
-	background: #f2f2f2;
 }
 
 #zone{
-	background: #eee;
+	background: #fff;
 	width: 100%;
 }
 
 #zone td{
-	background: #f2f2f2;
 	padding: 5px;
-	border: 1px solid #fff; 
+	border: 1px solid #eee;
+	border-width: 0 1px 1px 0; 
 }
 #zone tr{
 	vertical-align: top;
@@ -490,11 +509,11 @@ ul{
 	margin: 0;
 }
 #zone .head{
-	font-weight: bold;
-	background: #eee;
-	text-align: right;
-	width: 80px;
-	/*vertical-align: middle;*/
+font-weight: bold;
+text-align: right;
+width: 80px;
+color: #888;
+padding-top: 7px;
 }
 
 .mailLst .mail-id{font-size: 13px;color: #59d;}
@@ -530,11 +549,20 @@ ul{
 	color: #59b;
 	text-transform: capitalize;
 }
-.mailLst .subject{
+
+.trim{
 	white-space: nowrap;
 	overflow: hidden;
-	color: #808080;
 	text-overflow: ellipsis;
+}
+
+.mailLst .from{
+	width: 150px;
+	padding-left: 10px;
+}
+
+.mailLst .subject{
+	color: #808080;
 	display: inline-block;
 	width: 337px;
 	vertical-align: bottom;
@@ -551,6 +579,10 @@ ul{
 }
 .mailLst td{
 	padding: 3px 5px 2px 0;
+}
+
+.mailLst .first{
+	width: 45px;
 }
 h4{
 	font-size: 14px;
@@ -601,14 +633,15 @@ h5{
 	color: #ccc;
 }
 #mailTab li.sele{
-	background: #fff;
-	color: #777;
-	border-top: 1px solid #d0d0d0;
-	border-left: 1px solid #e0e0e0;
+background: #fff;
+color: #888;
+border-top: 1px solid #ddd;
+border-left: 1px solid #eee;
+font-weight: bold;
 }
 
 #mailTab li.sele > .name{
-	color: #555;
+	color: #888;
 }
 
 .hide{display: none;}
@@ -631,12 +664,16 @@ h5{
 	text-transform: capitalize;
 	color: #888;
 	cursor: pointer;
-	border-right: 1px solid #bbb;
+	border: 1px solid #bbb;
+	border-width: 0 1px 1px 0;
 	margin: 0 1px 0 0;
 	text-align: center;
 }
 .ctgry-lst li.sele{
-	color: #f9f9f9;
+color: #19f;
+background: #fff;
+border-bottom-color: #fff;
+border-top: 1px solid #bbb;
 }
 
 .flat-btn:hover{

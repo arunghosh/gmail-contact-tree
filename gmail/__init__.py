@@ -25,7 +25,6 @@ class Auth:
         return auth_uri
 
 
-
     @staticmethod
     def get_auth_http(user):
         storage = Storage(user.email)

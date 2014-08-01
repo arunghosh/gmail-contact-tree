@@ -1,11 +1,12 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from . import Auth
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django.http import HttpResponseRedirect
 from auth.models import MyUser
 from django.contrib.auth import authenticate, login as auth_login
 from django.core.exceptions import ObjectDoesNotExist
 from .parsers import InboxImport
+from django.db import transaction
+from . import Auth
 
 
 def login(request):
@@ -23,17 +24,24 @@ def callback(request):
         user = MyUser.objects.create_user(email=user.email, name=user.name, image_url=user.image_url, password='auto')
     user = authenticate(email=user.email, password='auto')
     auth_login(request, user)
-    # in_import = InboxImport(user)
-    # in_import.import_all()
     return HttpResponseRedirect('/')
 
 
+class RefreshInboxView(APIView):
 
-# @login_required()
-# def initial_import(request):
-#     user = request.user
-#     in_import = InboxImport(user)
-#     in_import.import_all()
-#     return render(request, "inbox_home.html")
-#
-#
+    @transaction.atomic
+    def get(self, request):
+        user = request.user
+        in_import = InboxImport(user)
+        result = in_import.import_new()
+        return Response({'count': result.count})
+
+
+class ImportInboxView(APIView):
+
+    @transaction.atomic
+    def get(self, request):
+        user = request.user
+        in_import = InboxImport(user)
+        result = in_import.import_old()
+        return Response({'count': result.count})

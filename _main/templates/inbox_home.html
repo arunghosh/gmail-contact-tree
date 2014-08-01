@@ -13,8 +13,8 @@
 	</style>
 </head>
 <body ng-app="app">
-	<div ng-controller="ctrl">
-		<div id="banner">
+	<div>
+		<div id="banner" ng-controller="userCtrl">
 			<img src="{{user.image_url}}">
 			<ul style="display:inline-block;padding:5px 0 0 4px;">
 				<li><h6>{[user.name]}</h6></li>
@@ -30,20 +30,29 @@
 			<busy show='showBusy'>
 				<div style="text-align:center;">{[busyText]}</div>
 			</busy>
-			<div style="display:inline-block;width:50%;float:left">
+			<div style="display:inline-block;width:50%;float:left" ng-controller="zoneCtrl">
 				<ul class="ctgry-lst">
-					<li ng-click="showZoneSet=!showZoneSet" ng-class={sele:showZoneSet}><span class="glyphicon glyphicon-cog"></span></li>
-					<li ng-repeat="c in ctgrys" ng-class="{sele:seleCtgrys.indexOf(c) > -1}"  ng-click="toggleCtrgy(c)">{[c]}</li>
+					<li ng-click="showZoneSet=!showZoneSet" ng-class={sele:showZoneSet}><span class="glyphicon glyphicon-cog"></span></li><li ng-repeat="c in ctgrys" ng-class="{sele:seleCtgry == c}"  ng-click="toggleCtrgy(c)">{[c]}</li>
 				</ul>
 				<div ng-show="showZoneSet">
 					<table id="zoneEdit">
 						<tr>
 							<td class="text">Safe</td>
-							<td><input type="number" ng-model="zone1"></td>
+							<td>
+								<div class="input-group">
+									<input type="number" ng-model="zone1">
+								  	<span class="input-group-addon">days</span>
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<td class="text">Danger</td>
-							<td><input type="number" ng-model="zone2"></td>
+							<td>
+								<div class="input-group">
+									<input type="number" ng-model="zone2">
+								  	<span class="input-group-addon">days</span>
+								</div>
+							</td>
 						</tr>
 						<tr>
 							<td></td>
@@ -78,9 +87,9 @@
 					</tr>
 				</table>
 			</div>
-			<div style="display:inline-block;width:50%;">
+			<div style="display:inline-block;width:50%;" ng-controller="contactCtrl">
 				<ul class="ctrl-lst">
-					<li ng-click="refreshInbox()"><span class="glyphicon glyphicon-repeat"></span> Refresh</li><li ng-click="importInbox()"><span class="glyphicon glyphicon-save"></span> Import</li>
+					<li ng-click="refreshInbox()"><span class="glyphicon glyphicon-refresh"></span> Refresh</li><li ng-click="importInbox()"><span class="glyphicon glyphicon-save"></span> Import</li>
 				</ul>
 				<div id="statusMsg">{[statusMsg]}</div>
 				<ul id="mailTab">
@@ -89,7 +98,7 @@
 				<div style="width:100%;"  class="mailLst">
 					<ul ng-class="{hide:contact==null}" class="mail-id">
 						<li>
-							<span class="glyphicon glyphicon-link"></span> {[contact.category]}
+							<span class="glyphicon glyphicon-info-sign"></span> {[contact.category]}
 							<span class="glyphicon glyphicon-edit btn-icon" ng-click="ctgryEdit=true" ng-hide="ctgryEdit"></span>
 							<ul class="ctgry-edit-lst" ng-show="ctgryEdit">
 								<li ng-repeat="c in ctgrys" ng-click="updateCtrgy(c)">{[c]}</li>
@@ -104,17 +113,29 @@
 						</li>
 					</ul>
 					<table class="ln-dupe">
+
+					</table>
+					<table class="ln-dupe">
 						<tr ng-repeat="l in lnDupes">
 							<td class="img"><img src="{[l.image_url]}"></div>
 							<td><a href="{[l.profile_url]}" class="name" target="_blank">{[l.name]}</a><div class="dim">{[l.headline]}</div></div>
 						</tr>
 					</table>
-					<table>						
+					<table>	
+						<tr ng-repeat="c in duplicates">
+							<td class="folder dim"><span class="glyphicon glyphicon-user"></span> D</td>
+							<td class="from">{[c.name]}</td>
+							<td class="subject trim">{[c.email]} | {[c.mobile]}</td>
+							<td>
+								<span ng-hide="c.status" ng-click="merge(c)" class="glyphicon glyphicon-transfer btn-icon"></span>
+								<span ng-show="c.status" class="success glyphicon glyphicon-saved"></span>
+							</td>
+						</tr>					
 						<tr ng-repeat="m in mails">
 							<td class="folder dim">{[m.folder]}</td>
-							<td class="name"><a target="blank" href="{[m.url]}">{[m.name]}</a></td>
+							<td class="from trim"><a target="blank" href="{[m.url]}">{[m.name]}</a></td>
+							<td><a class="subject trim" target="blank" href="{[m.url]}"> {[m.subject]} </a></td>
 							<td class="date"><a target="blank" href="{[m.url]}">{[m.date | date_mdy]}</a></td>
-							<td><a class="subject" target="blank" href="{[m.url]}"> {[m.subject]} </a></td>
 						</tr>
 					</table>
 				</table>

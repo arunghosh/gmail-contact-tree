@@ -130,7 +130,7 @@ app.filter("date_mdy", function() {
   return function(input) {
     var arr = input.replace("T","-").split("-");
     var date = new Date(arr[0], arr[1] - 1, arr[2]);
-    return date.toDateString().substring(4,15);
+    return date.toDateString().substring(4,15).replace(new Date().getFullYear(), "");
 };
 });
 
@@ -144,8 +144,16 @@ app.factory('api', function($http){
             return $http.post("contact/ctgry/" + cid + "/" + ctgry + "/");
         },
 
+        duplicates: function(contact){
+            return $http.get("contact/duplicates/" + contact.id + "/");
+        },
+
         contacts : function(){
             return $http.get('contacts/');
+        },
+
+        merege : function(org, dup){
+            return $http.post('contacts/merge/', {'org_id':org.id,'dup_id':dup.id});
         },
 
         mails : function(cid){
@@ -203,56 +211,59 @@ Array.prototype.contains = function(item){
     return false;   
 };
 
+Array.prototype.containsById = function(item){
+    for(var i = 0; i < this.length; i++){
+        if(this[i].id == item.id){
+            return true;
+        }
+    }
+    return false;   
+};
+
 Array.prototype.remove = function(item){
     var index = this.indexOf(item);
     this.splice(index,1);
 };
 
-app.controller('ctrl', function($scope, api){
-    function init()
-    {
-        $scope.zones = ["Safe", "Inter", "Danger"];
-        $scope.mails = [];
-        $scope.showBusy = false;
-        $scope.masterContacts = [];
-        $scope.contacts = [];
-        $scope.seleContacts = [];
-        $scope.recentMails = [];
-        $scope.seleCtgrys = ['personal', '--'];
-        $scope.busyText = "Loading....";
-        $scope.mobileEdit = false;
-        refreshContacts();
-        getRecentMails();
-        refreshInbox(false);
-        api.zones().success(function(result){
-            $scope.zone1 = result.p1;
-            $scope.zone2 = result.p2;
-        });
+// app.controller('baseCtrl', function($scope, $rootScope, api){
+//     $scope.busyText = "Loading....";
+//     $scope.$on("showBusy", function(event, text){
+//         $scope.showBusy = true;
+//         $scope.busyText = text;
+//     })
 
-        api.userInfo().success(function(result){
-            $scope.user = result;
-        })
-    }   
+// });
 
-    $scope.updateZone = function(){
-        api.updateZones($scope.zone1, $scope.zone2).success(function(){
-
-        });
-    };
-
-    $scope.updateCtrgy = function(ctgry){
-        api.updateCtrgy($scope.contact.id, ctgry).success(function(){
-            $scope.contact.category = ctgry;
-            $scope.ctgryEdit = false;
-            refreshContacts();
-        });
-    };
-
+app.controller('userCtrl', function($scope, api){
     $scope.updateMobile = function(){
         api.updateMobile($scope.user.phone).success(function(result){
             $scope.mobileEdit = false;
         });
     };
+
+    api.userInfo().success(function(result){
+        $scope.user = result;
+    })
+});
+
+app.controller('zoneCtrl', function($scope, api, $rootScope){
+    $scope.contacts = [];
+    $scope.zones = ["Safe", "Inter", "Danger"];
+    $scope.seleCtgry = 'personal';
+
+    api.zones().success(function(result){
+        $scope.zone1 = result.p1;
+        $scope.zone2 = result.p2;
+    });
+
+    $scope.updateZone = function(){
+        api.updateZones($scope.zone1, $scope.zone2).success(function(){
+            $scope.showZoneSet = false;
+        });
+    };
+
+
+    refreshContacts();
 
     function refreshContacts(){
         api.contacts().success(function(result){
@@ -261,20 +272,60 @@ app.controller('ctrl', function($scope, api){
             var ctgrys = result.map(function(c){
                 return c.category;
             });
-            $scope.ctgrys = ctgrys.reduce(function(a,b){
-                if(a.indexOf(b)<0) a.push(b);
+            $rootScope.ctgrys = ctgrys.reduce(function(a,b){
+                if(a.indexOf(b) < 0) a.push(b);
                 return a;
             },[]);
-            onCtgrySelection();
+            $scope.onCtgryChange();
         });
     }
 
-    function onCtgrySelection(){
+    $rootScope.onCtgryChange = function(){
         $scope.contacts = $scope.masterContacts.reduce(function(a,b){
-            if($scope.seleCtgrys.contains(b.category)) a.push(b);
+            if($scope.seleCtgry === b.category) a.push(b);
             return a;
         }, [])
-    }
+    }    
+
+    $scope.updateStatus = function(contact, status){
+        api.updateStatus(contact.id, status).success(function(result){
+            contact.status = status;
+        });
+    };
+
+
+    $scope.toggleCtrgy = function(ctgry){
+        $scope.seleCtgry = ctgry;
+        $scope.onCtgryChange();
+    };
+});
+
+app.controller('contactCtrl', function($scope, api, $rootScope){
+    // $scope.$emit("abcd");
+    function init()
+    {
+        $scope.mails = [];
+        $scope.showBusy = false;
+        $scope.seleContacts = [];
+        $scope.recentMails = [];
+        $scope.mobileEdit = false;
+        getRecentMails();
+        refreshInbox(false);
+    }   
+
+    $scope.merge = function(contact){
+        api.merege($scope.contact, contact).success(function(){
+            contact.status = true;
+        });
+    };
+
+    $scope.updateCtrgy = function(ctgry){
+        api.updateCtrgy($scope.contact.id, ctgry).success(function(){
+            $scope.contact.category = ctgry;
+            $scope.ctgryEdit = false;
+            $rootScope.onCtgryChange();
+        });
+    };
 
     $scope.refreshInbox = function(){
         refreshInbox(true);
@@ -291,15 +342,6 @@ app.controller('ctrl', function($scope, api){
                 onAccessFail();
             }
         });
-    };
-
-    $scope.toggleCtrgy = function(ctgry){
-        if($scope.seleCtgrys.contains(ctgry)){
-            $scope.seleCtgrys.remove(ctgry)
-        } else{
-            $scope.seleCtgrys.push(ctgry);
-        }
-        onCtgrySelection();
     };
 
     $scope.importInbox = function(){
@@ -327,19 +369,12 @@ app.controller('ctrl', function($scope, api){
         $scope.showBusy = false;
     }
 
-    $scope.updateStatus = function(contact, status){
-        api.updateStatus(contact.id, status).success(function(result){
-            contact.status = status;
-        });
-    };
-
-    $scope.setContact = function(contact){
-       
+    $rootScope.setContact = function(contact){
         $scope.contact = contact;
-        if(!$scope.seleContacts.contains(contact)){
+        if(!$scope.seleContacts.containsById(contact)){
             $scope.seleContacts.push(contact);
         }
-
+        $scope.mails = $scope.calls = $scope.lnDuplicates = [];
         api.lnDuplicates(contact.id).success(function(result){
             $scope.lnDupes = result;
         }); 
@@ -352,12 +387,14 @@ app.controller('ctrl', function($scope, api){
             $scope.calls = result
         });
 
+        api.duplicates(contact).success(function(result){
+            $scope.duplicates = result
+        });
     };
 
     $scope.showRecent = function(){
         $scope.mails = $scope.recentMails;
         $scope.contact = null;
-        $scope.lnDupes = [];
     };
 
     function setMails(mails){
@@ -370,9 +407,10 @@ app.controller('ctrl', function($scope, api){
     $scope.removeContact = function(contact){
         var contacts = $scope.seleContacts;
         contacts.remove(contact);
+        debugger;
         if(contact == $scope.contact){
             if(contacts.length > 0){
-                $scope.getMails(contacts[0]);
+                $scope.setContact(contacts[0]);
             } else{
                 $scope.showMail = false;
             }

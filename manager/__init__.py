@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
-
+from contact import ContactStatus
 
 class ByZoneMgr:
 
     def __init__(self, user):
-        self.contacts = user.usercontact_set.all()
+        self.contacts = ContactStatus.get_active(user)
         self.safe = 0
         self.inter = 1
         self.unsafe = 2

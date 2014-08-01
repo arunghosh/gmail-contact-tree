@@ -2,10 +2,10 @@ from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
 from auth.views import login
-from contact.views import UpdateMobile, UpdateCtgry
-from gmail.views import login as gmail_login, callback
+from contact.views import UpdateMobile, UpdateCtgry, UpdateFollowStatus
+from gmail.views import login as gmail_login, callback, RefreshInboxView, ImportInboxView
 from inbox.views import  MailListView, RecentMailsView
-from manager.views import ContactsWithZoneView, UpdateFollowStatus, home, RefreshInboxView, ImportInboxView, UserInfo
+from manager.views import ContactsWithZoneView, home, UserInfo, DuplicateContacts, MergeContacts
 from mobile.views import GetUserIdForMobView, UpdateCallsView, RecentCallsView, CallListView
 from lkdn.views import ln_callback, ln_home, DuplicateLnContacts
 from setting.views import ZoneTimeView
@@ -27,6 +27,8 @@ urlpatterns = patterns('',
     url(r'^contacts/$', ContactsWithZoneView.as_view()),
     url(r'^contact/status/(?P<cid>[0-9]*)/(?P<status>[0-9]*)/$', UpdateFollowStatus.as_view()),
     url(r'^contact/ctgry/(?P<cid>[0-9]*)/(?P<ctgry>\w+)/$', UpdateCtgry.as_view()),
+    url(r'^contact/duplicates/(?P<cid>[0-9]*)/$', DuplicateContacts.as_view()),
+    url(r'^contacts/merge/$', MergeContacts.as_view()),
 
     url(r'^gmail/$', gmail_login),
     url(r'^oauth2callback/$', callback),
