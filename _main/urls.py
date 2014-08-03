@@ -8,7 +8,7 @@ from inbox.views import  MailListView, RecentMailsView
 from manager.views import ContactsWithZoneView, home, UserInfo, DuplicateContacts, MergeContacts
 from mobile.views import GetUserIdForMobView, UpdateCallsView, RecentCallsView, CallListView
 from lkdn.views import ln_callback, ln_home, DuplicateLnContacts
-from setting.views import ZoneTimeView
+from zone.views import ZoneTimeView
 
 
 admin.autodiscover()
