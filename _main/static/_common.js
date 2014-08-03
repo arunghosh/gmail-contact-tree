@@ -76,7 +76,7 @@ var common = new function() {
 };
 
 
-var app = angular.module('app', ['ngTouch']);
+var app = angular.module('app', ['ngAnimate']);
 app.config(function($interpolateProvider, $httpProvider) {
     $interpolateProvider.startSymbol('{[');
     $interpolateProvider.endSymbol(']}');
@@ -85,7 +85,50 @@ app.config(function($interpolateProvider, $httpProvider) {
 
 
 
+app.directive('slideable', function () {
+    return {
+        restrict:'C',
+        compile: function (element, attr) {
+            // wrap tag
+            var contents = element.html();
+            element.html('<div class="slideable_content" style="margin:0 !important; padding:0 !important" >' + contents + '</div>');
 
+            return function postLink(scope, element, attrs) {
+                // default properties
+                attrs.duration = (!attrs.duration) ? '1s' : attrs.duration;
+                attrs.easing = (!attrs.easing) ? 'ease-in-out' : attrs.easing;
+                element.css({
+                    'overflow': 'hidden',
+                    'height': '0px',
+                    'transitionProperty': 'height',
+                    'transitionDuration': attrs.duration,
+                    'transitionTimingFunction': attrs.easing
+                });
+            };
+        }
+    };
+});
+app.directive('slideToggle', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var target = document.querySelector(attrs.slideToggle);
+            attrs.expanded = false;
+            element.bind('click', function() {
+                var content = target.querySelector('.slideable_content');
+                if(!attrs.expanded) {
+                    content.style.border = '1px solid rgba(0,0,0,0)';
+                    var y = content.clientHeight;
+                    content.style.border = 0;
+                    target.style.height = y + 'px';
+                } else {
+                    target.style.height = '0px';
+                }
+                attrs.expanded = !attrs.expanded;
+            });
+        }
+    }
+});
 
 app.directive('modalDialog', function() {
   return {
@@ -294,7 +337,7 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
     };
 
 
-    $scope.toggleCtrgy = function(ctgry){
+    $scope.toggleCtrgy       = function(ctgry){
         $scope.seleCtgry = ctgry;
         $scope.onCtgryChange();
     };
@@ -333,8 +376,8 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
 
     function refreshInbox(showBusy)
     {
-        $scope.showBusy = showBusy;
-        $scope.busyText = "Fetching latest mails....";
+        $rootScope.showBusy = showBusy;
+        $rootScope.busyText = "Fetching latest mails....";
         api.refreshInbox().success(function(result){
             onImport(result);
         }).error(function(){
@@ -345,8 +388,8 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
     };
 
     $scope.importInbox = function(){
-        $scope.showBusy = true;
-        $scope.busyText = "Importing Old Mails....";
+        $rootScope.showBusy = true;
+        $rootScope.busyText = "Importing Old Mails....";
         api.importInbox().success(function(result){
             onImport(result);
         }).error(function(){
@@ -366,7 +409,7 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
             refreshContacts();
             getRecentMails();
         }
-        $scope.showBusy = false;
+        $rootScope.showBusy = false;
     }
 
     $rootScope.setContact = function(contact){
@@ -380,7 +423,9 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         }); 
 
         api.mails(contact.id).success(function(result){
-            setMails(result);
+            addMailsUrl(result);
+            $scope.contactMails = result;
+            $scope.showContact();
         });
 
         api.calls(contact.id).success(function(result){
@@ -394,14 +439,18 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
 
     $scope.showRecent = function(){
         $scope.mails = $scope.recentMails;
-        $scope.contact = null;
+        $scope.recentMode = true;
     };
 
-    function setMails(mails){
+    $scope.showContact = function(){
+        $scope.mails = $scope.contactMails;
+        $scope.recentMode = false;
+    };
+
+    function addMailsUrl(mails){
         for(var i = 0; i < mails.length; i++){
             mails[i].url = "https://mail.google.com/mail/u/0/#inbox/" + mails[i].message_id;
         }
-        $scope.mails = mails;
     }
 
     $scope.removeContact = function(contact){
@@ -419,8 +468,9 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
 
     function getRecentMails(){
         api.recentMails().success(function(result){
-            if($scope.contact == null) setMails(result);
+            if($scope.contact == null) addMailsUrl(result);
             $scope.recentMails = result;
+            $scope.showRecent();
         });
     }
 

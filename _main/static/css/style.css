@@ -18,7 +18,9 @@ input:focus{
 	color: #5b7!important;
 }
 
-
+a{
+	color: #7bf;
+}
 
 input[type=text], input[type=url], input[type=email], textarea, input[type=number], input[type=password]
 {
@@ -444,7 +446,7 @@ form .ctnr{
 	font-size: 13px;
 	font-weight: bold;
 	padding-left:4px; 
-	color: #ddd;
+	color: #eee;
 }
 
 .cnt-lst .remove:hover{
@@ -473,18 +475,18 @@ form .ctnr{
 	font-size: 12px;
 	height: 20px;
 	vertical-align: middle;
-	color: #999;
+	color: #aaa;
 }
 .cnt-lst li{
-	display: inline-block;
-	background: #fbfbfb;
-	padding: 0px 13px;
-	margin: 2px 3px 3px 2px;
-	height: 21px;
-	color: #888;
-	cursor: pointer;
-	border-radius: 20px;
-	border: 1px solid #e9e9e9;
+display: inline-block;
+background: #fdfdfd;
+padding: 0px 13px;
+margin: 2px 3px 3px 2px;
+height: 21px;
+color: #888;
+cursor: pointer;
+border-radius: 20px;
+border: 1px solid #f8f8f8;
 } 
 .cnt-lst{ 
 	list-style-type: none;
@@ -497,8 +499,8 @@ form .ctnr{
 
 #zone td{
 	padding: 5px;
-	border: 1px solid #eee;
-	border-width: 0 1px 1px 0; 
+	border: 1px solid #f2f2f2;
+	border-width: 0 0 1px 0; 
 }
 #zone tr{
 	vertical-align: top;
@@ -514,11 +516,13 @@ text-align: right;
 width: 80px;
 color: #888;
 padding-top: 7px;
+background: #f9f9f9;
+border-right: 1px solid #E9E9EA;
 }
 
-.mailLst .mail-id{font-size: 13px;color: #59d;}
-.mailLst .mail-id > li{border-bottom: 1px dotted #ddd;padding:0px 10px 4px 10px;}
-.mailLst .glyphicon{font-size: 11px; color: #555;margin-right: 5px;}
+.mailLst .mail-id{font-size: 13px;color: #19f;}
+.mailLst .mail-id > li{border-bottom: 1px dotted #ddd;padding:3px 10px 3px 10px;}
+.mailLst .glyphicon{font-size: 11px; color: #888;margin-right: 5px;}
 .mailLst{
 	width: 100%;
 }
@@ -528,10 +532,10 @@ padding-top: 7px;
 
 .mailLst{
 	background: #fff;
-	height: 400px;
+	height: 550px;
 	overflow: scroll;
 	overflow-x:hidden; 
-	border: 1px solid #eee;
+	border: 1px solid #f9f9f9;
 	border-top:none; 
 	padding: 10px 0 0 0;
 	display: inline-block;
@@ -557,8 +561,8 @@ padding-top: 7px;
 }
 
 .mailLst .from{
-	width: 150px;
-	padding-left: 10px;
+	width: 140px;
+	padding-left: 10px;padding: 0 12px 0 24px;
 }
 
 .mailLst .subject{
@@ -593,64 +597,36 @@ h5{
 	font-weight: bold;
 }
 #mailTab {
-	background: #f0f0f0;
+	display: inline-block;
 }
 #mailTab ul{
 	list-style-type: none;
-	background: #eee;
 }
 #mailTab a:hover{
 	text-decoration: none;
 }
 #mailTab li{
 	cursor: pointer;
-	color: #555;
-	border: 1px solid #eee;
+	color: #bbb;
+	border: 1px solid #f9f9f9;
 	border-bottom: none;
 	display: inline-block;
 	border-right: none;
 	border-right: 1px solid #fff;
 	border-top:1px solid #fff;
-}
-#mailTab .name{
-	padding: 7px 10px 0 10px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 100px;
-	white-space: nowrap;
-	display: inline-block;
-	color: #999;
+	padding: 6px 24px 4px 10px;
+	background: #f9f9f9;
 }
 
-#mailTab .remove:hover{
-	color: #c55;
-}
-#mailTab .remove{
-	float: right;
-	padding: 4px 8px 0 3px;
-	font-weight: bold;
-	font-size: 14px;
-	color: #ccc;
-}
 #mailTab li.sele{
 background: #fff;
-color: #888;
-border-top: 1px solid #ddd;
-border-left: 1px solid #eee;
+color: #19f;
 font-weight: bold;
 }
 
-#mailTab li.sele > .name{
-	color: #888;
-}
-
 .hide{display: none;}
-.ctgry-lst {
-	background: #a0a0a0;
-	border:1px solid #fff;
-	border-width: 1px 1px 0 0;
-	border-right-color: #bbb;
 
+.ctgry-lst {
 }
 
 .ctgry-lst li:hover{
@@ -658,22 +634,24 @@ font-weight: bold;
 }
 
 .ctgry-lst li{
-	display: inline-block;
-	width: 81px;
-	padding: 4px 4px 2px 4px;
-	text-transform: capitalize;
-	color: #888;
-	cursor: pointer;
-	border: 1px solid #bbb;
-	border-width: 0 1px 1px 0;
-	margin: 0;
-	text-align: center;
+display: inline-block;
+width: 81px;
+padding: 7px 4px 3px 4px;
+text-transform: capitalize;
+color: #bbb;
+cursor: pointer;
+border: 1px solid #bbb;
+border-width: 0 1px 1px 0;
+margin: 0;
+text-align: center;
+background: #f9f9f9;
+border-color: #e9e9ea #f2f2f2;
 }
 .ctgry-lst li.sele{
 color: #19f;
 background: #fff;
-border-bottom-color: #fff;
-border-top: 1px solid #bbb;
+font-weight: bold;
+border-bottom-color:#fff; 
 }
 
 .flat-btn:hover{
@@ -702,22 +680,23 @@ border-top: 1px solid #bbb;
 }
 
 .ctrl-lst li:hover{
-	background: #19f;
+	background: #eee;
 }
 .ctrl-lst li{
-	padding: 6px 22px 2px 22px;
-	border-right: 1px solid rgba(255,255,255,.5);
-	display: inline-block;
-	cursor: pointer;
-	background: #4af;
-	color: #fff;	
+padding: 5px 24px 5px 24px;
+border-right: 1px solid rgba(255,255,255,1);
+display: inline-block;
+cursor: pointer;
+color: #777;
+margin: 0 0px 0 0;
+background: #eee;
 }
 .ctrl-lst{
-	background: #eee;
-	border: 1px solid #fff;
-	border-width: 1px 0 0 0;
+	float: right;
+	background: #fff;
 	list-style-type: none;
 	font-size: 12px;
+	display: inline-block;
 }
 .ctrl-lst .glyphicon{
 	padding: 0 5px;
@@ -746,7 +725,7 @@ border-top: 1px solid #bbb;
 }
 
 #banner{
-	padding:5px 30px;background:#fcfcfc;
+	background:#444;
 	line-height: 22px;
 }
 
@@ -761,16 +740,26 @@ border-top: 1px solid #bbb;
 #banner .glyphicon{
 	font-size: 11px;
 	color: #d83;
+	padding-right: 8px;
 }
 
 #banner li{
-	list-style-type: none;
-	border-bottom: 1px dotted #ccc;
+display: inline-block;
+color: #bbb;
+border-right: 1px solid #555;
+padding: 7px 30px 2px 30px;
+border-left: 1px solid #222;
 }
 #banner img{
-	margin-top: 7px;
 	vertical-align: top;
-	box-shadow: 1px 1px 2px 0px rgba(0,0,0,.5);
+	height: 20px;
+padding: 0 12px 0 24px;
+}
+
+#banner .product{
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #ccc;
 }
 .btn-icon:hover{
 	color: #444!important;
@@ -829,4 +818,79 @@ border-color: #eee;
 	padding: 2px 5px 0px 10px;
 	min-width: 80px;
 	vertical-align: bottom;
+}
+
+/*
+  We're using CSS transitions for when
+  the enter and move events are triggered
+  for the element that has the .repeated-item
+  class
+*/
+.repeated-item.ng-enter, .repeated-item.ng-move {
+  -webkit-transition:0.7s linear all;
+  -moz-transition:0.7s linear all;
+  -o-transition:0.7s linear all;
+  transition:0.7s linear all;
+  opacity:0;
+}
+
+/*
+ The ng-enter-active and ng-move-active
+ are where the transition destination properties
+ are set so that the animation knows what to
+ animate.
+*/
+.repeated-item.ng-enter.ng-enter-active,
+.repeated-item.ng-move.ng-move-active {
+  opacity:1;
+}
+
+/*
+  We're using CSS keyframe animations for when
+  the leave event is triggered for the element
+  that has the .repeated-item class
+*/
+.repeated-item.ng-leave {
+  -webkit-animation:0.6s my_animation;
+  -moz-animation:0.6s my_animation;
+  -o-animation:0.6s my_animation;
+  animation:0.6s my_animation;
+}
+
+@keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+/*
+  Unfortunately each browser vendor requires
+  its own definition of keyframe animation code...
+*/
+@-webkit-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-moz-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+@-o-keyframes my_animation {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+
+
+
+.show-hide {
+  opacity: 1;
+  -webkit-animation:0.8s my_animation;
+  -moz-animation:0.8s my_animation;
+  -o-animation:0.8s my_animation;
+  animation:0.8s my_animation;
+}
+
+.show-hide.ng-hide {
+  opacity:1;
 }

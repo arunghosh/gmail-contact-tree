@@ -26,9 +26,7 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,6 +40,7 @@ INSTALLED_APPS = (
     'lkdn',
     'mobile',
 )
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,49 +57,21 @@ ROOT_URLCONF = '_main.urls'
 
 WSGI_APPLICATION = '_main.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'NAME': 'contact_db',
-        'USER': 'postgres',
-        'PASSWORD': 'abcd1234',
-        'OPTIONS': {
-            "autocommit": True,
-        },
-    }
-}
-
-import dj_database_url
-DATABASES['default'] = dj_database_url.config()
-
 TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',)
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = False
 
 TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
 
-PRJ_DIR = os.path.dirname(os.path.abspath(__file__))
+# PRJ_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATICFILES_DIRS = (
-    os.path.join(PRJ_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static'),
 )
