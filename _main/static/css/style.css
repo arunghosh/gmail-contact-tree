@@ -475,7 +475,7 @@ form .ctnr{
 	font-size: 12px;
 	height: 20px;
 	vertical-align: middle;
-	color: #aaa;
+	color: #999;
 }
 .cnt-lst li{
 display: inline-block;
@@ -486,7 +486,7 @@ height: 21px;
 color: #888;
 cursor: pointer;
 border-radius: 20px;
-border: 1px solid #f8f8f8;
+border: 1px solid #ebebeb;
 } 
 .cnt-lst{ 
 	list-style-type: none;
@@ -608,13 +608,9 @@ h5{
 #mailTab li{
 	cursor: pointer;
 	color: #bbb;
-	border: 1px solid #f9f9f9;
 	border-bottom: none;
 	display: inline-block;
-	border-right: none;
-	border-right: 1px solid #fff;
-	border-top:1px solid #fff;
-	padding: 6px 24px 4px 10px;
+	padding: 6px 24px 5px 10px;
 	background: #f9f9f9;
 }
 
@@ -622,6 +618,8 @@ h5{
 background: #fff;
 color: #19f;
 font-weight: bold;
+border:1px solid #eee;
+border-width: 0 1px;
 }
 
 .hide{display: none;}

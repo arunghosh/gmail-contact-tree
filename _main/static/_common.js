@@ -337,7 +337,7 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
     };
 
 
-    $scope.toggleCtrgy       = function(ctgry){
+    $scope.toggleCtrgy = function(ctgry){
         $scope.seleCtgry = ctgry;
         $scope.onCtgryChange();
     };
@@ -406,7 +406,7 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
     function onImport(result){
         $scope.statusMsg = result.count + " mails imported";
         if(result.count > 0) {
-            refreshContacts();
+            // refreshContacts();
             getRecentMails();
         }
         $rootScope.showBusy = false;

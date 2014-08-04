@@ -7,7 +7,7 @@ from common.views import JSONResponseMixin
 from django.views.generic.base import View
 import json
 from .serializer import ContactZoneSerializer, MyUserSerializer, DuplicateContactSerializer
-from . import ByZoneMgr
+from zone import ByZoneMgr
 from contact.models import UserContact
 from django.db import transaction
 from .merge import Merge

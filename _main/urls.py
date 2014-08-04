@@ -14,8 +14,6 @@ from zone.views import ZoneTimeView
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', home),
@@ -23,7 +21,6 @@ urlpatterns = patterns('',
     url(r'^update_mobile/(?P<mobile>[0-9]*)/$', UpdateMobile.as_view()),
     url(r'^user_info/$', UserInfo   .as_view()),
 
-    # url(r'^contacts/$', ContactsView.as_view()),
     url(r'^contacts/$', ContactsWithZoneView.as_view()),
     url(r'^contact/status/(?P<cid>[0-9]*)/(?P<status>[0-9]*)/$', UpdateFollowStatus.as_view()),
     url(r'^contact/ctgry/(?P<cid>[0-9]*)/(?P<ctgry>\w+)/$', UpdateCtgry.as_view()),
