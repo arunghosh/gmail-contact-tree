@@ -572,9 +572,8 @@ border-right: 1px solid #E9E9EA;
 }
 
 .mailLst .from{
-	display: inline-block;
-	width: 140px;
-	padding-left: 10px;padding: 0 12px 0 24px;
+display: inline-block;
+width: 120px;
 }
 
 .mailLst .remark{
