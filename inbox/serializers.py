@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 from .models import UserContact, MailMessage
 from contact import MailDirection
 
@@ -14,6 +15,7 @@ from contact import MailDirection
 class MailSerializer(serializers.ModelSerializer):
 
     name = serializers.SerializerMethodField('get_name')
+    date = serializers.DateTimeField(format=settings.TIME_FORMAT)
 
     class Meta:
         model = MailMessage
@@ -24,5 +26,5 @@ class MailSerializer(serializers.ModelSerializer):
         if len(contacts) > 0:
             return contacts[0].mail_contact.user_contact.name
         else:
-            return "self"
+            return "Self"
 

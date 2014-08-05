@@ -25,10 +25,13 @@ class Auth:
         auth_uri = Auth.flow.step1_get_authorize_url()
         return auth_uri
 
+    @staticmethod
+    def __storage_file(user):
+        return '_temp/credentials/' + user.email
 
     @staticmethod
     def get_auth_http(user):
-        storage = Storage(user.email)
+        storage = Storage(Auth.__storage_file(user))
         credentials = storage.get()
         http = httplib2.Http()
         http = credentials.authorize(http)
@@ -52,6 +55,6 @@ class Auth:
         user.image_url = response['image']['url']
         user.email = response['emails'][0]['value']
 
-        storage = Storage(user.email)
+        storage = Storage(Auth.__storage_file(user))
         storage.put(credentials)
         return user

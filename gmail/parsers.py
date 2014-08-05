@@ -16,14 +16,14 @@ class InboxImport:
         self.user = user
         self.service = Auth.get_gmail_srv(user)
         self.count = 0
-        self.max_count = 9
+        self.max_count = 20
         self.is_refresh = False
         self.can_import = True
 
     def __process_response(self, response):
         if response['messages']:
             for message in response['messages']:
-                print '***MSG ID: %s' % (message['id'])
+                print '***MSG ID: %d %s' % (self.count, message['id'])
                 mail_import = MailImport(message['id'], self.service, self.user)
                 mail_import.import_msg()
                 self.count += 1 if mail_import.is_success else 0
@@ -67,8 +67,14 @@ class ContactsImport:
         self.type = type
         self.user = user
         ids = self.response.strip().split('>,')
-        self.contacts = [self.__get_contact(m) for m in ids]
-
+        contacts = [self.__get_contact(m) for m in ids]
+        self.contacts = []
+        for c in contacts:
+            if ',' in c.email:
+                self.contacts += [self.__get_contact(m) for m in c.email.split(',')]
+            else:
+                self.contacts += [c]
+        pass
 
     def __get_contact(self, resp):
         resp = resp.replace(';', '').replace('>', '').replace('"', '').replace("'", "")
@@ -92,6 +98,8 @@ class ContactsImport:
         return contact
 
     def save(self):
+        if len(self.contacts) > 4:  #or self.type == MailDirection.CC:
+            return
         for c in [c for c in self.contacts if c.email != self.user.email and len(c.email) > 4]:
             c = self.__save_contact(c)
             contact_mail = MailContactMap()
@@ -152,12 +160,12 @@ class MailImport:
         #this is handle mails to arun.ghosh@gmail.com
         self.mail.type = self.mail.type if self.mail.type else MailDirection.TO
 
-
     def import_msg(self):
         if not self.__is_exist():
             self.__import_msg()
             if self.mail.date:
                 self.mail.save()
+                # print len(self.contact_imports)
                 [c.save() for c in self.contact_imports]
                 self.is_success = True
             else:

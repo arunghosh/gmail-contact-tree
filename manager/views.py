@@ -23,7 +23,7 @@ class ContactsWithZoneView(APIView):
     def get(self, request):
         user = request.user
         manager = ByZoneMgr(user)
-        slz = ContactZoneSerializer(manager.update_zone(), many=True)
+        slz = ContactZoneSerializer(manager.contacts_with_zone, many=True)
         return Response(slz.data)
 
 

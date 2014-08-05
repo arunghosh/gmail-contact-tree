@@ -58,7 +58,6 @@ var Calender = function(){
 };
 
 var common = new function() {
-
     this.withCommas = function(x){
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
@@ -76,10 +75,10 @@ var common = new function() {
 };
 
 
-var app = angular.module('app', ['ngAnimate']);
+var app = angular.module('app', ['ngAnimate', 'angularCharts']);
 app.config(function($interpolateProvider, $httpProvider) {
-    $interpolateProvider.startSymbol('{[');
-    $interpolateProvider.endSymbol(']}');
+    // $interpolateProvider.startSymbol('{[');
+    // $interpolateProvider.endSymbol(']}');
     $httpProvider.defaults.headers.post['X-CSRFToken'] = common.readCookie('csrftoken');
 });
 
@@ -108,6 +107,7 @@ app.directive('slideable', function () {
         }
     };
 });
+
 app.directive('slideToggle', function() {
     return {
         restrict: 'A',
@@ -131,50 +131,52 @@ app.directive('slideToggle', function() {
 });
 
 app.directive('modalDialog', function() {
-  return {
-    restrict: 'E',
-    scope: {
-      show: '='
-  },
-    replace: true, // Replace with the template below
-    transclude: true, // we want to insert custom content inside the directive
-    link: function(scope, element, attrs) {
-      scope.dialogStyle = {};
-      scope.title = attrs.title;
-      if (attrs.width) scope.dialogStyle.width = attrs.width;
-      if (attrs.height) scope.dialogStyle.height = attrs.height;
-      scope.hideModal = function() {
-        scope.show = false;
+    return {
+        restrict: 'E',
+        scope: {show: '='},
+        replace: true, // Replace with the template below
+        transclude: true, // we want to insert custom content inside the directive
+        link: function(scope, element, attrs) {
+            scope.dialogStyle = {};
+            scope.title = attrs.title;
+            if (attrs.width) scope.dialogStyle.width = attrs.width;
+            if (attrs.height) scope.dialogStyle.height = attrs.height;
+            scope.hideModal = function() {
+                scope.show = false;
+            };
+        },
+        templateUrl: "/static/html/modal.html"
     };
-},
-templateUrl: "/static/html/modal.html"
-};
 });
 
 app.directive('busy', function() {
-  return {
-    restrict: 'E',
-    scope: {
-      show: '='
-  },
-    replace: true, // Replace with the template below
-    transclude: true, // we want to insert custom content inside the directive
-    link: function(scope, element, attrs) {
-      scope.dialogStyle = {};
-      scope.hideModal = function() {
-        scope.show = false;
+    return {
+        restrict: 'E',
+        scope: {show: '='},
+        replace: true, // Replace with the template below
+        transclude: true, // we want to insert custom content inside the directive
+        link: function(scope, element, attrs) {
+                scope.dialogStyle = {};
+                scope.hideModal = function() {
+                scope.show = false;
+            };
+        },
+        templateUrl: "/static/html/busy.html"
     };
-},
-templateUrl: "/static/html/busy.html"
-};
 });
 
 app.filter("date_mdy", function() {
-  return function(input) {
-    var arr = input.replace("T","-").split("-");
-    var date = new Date(arr[0], arr[1] - 1, arr[2]);
-    return date.toDateString().substring(4,15).replace(new Date().getFullYear(), "");
-};
+    return function(input) {
+        var arr = input.split("T");
+        return arr[0].replace(new Date().getFullYear(), "");
+    };
+});
+
+app.filter("time", function() {
+    return function(input) {
+        var arr = input.split("T");
+        return arr[1].substring(0,6);
+    };
 });
 
 app.factory('api', function($http){
@@ -189,6 +191,14 @@ app.factory('api', function($http){
 
         duplicates: function(contact){
             return $http.get("contact/duplicates/" + contact.id + "/");
+        },
+
+        commItems: function(contact){
+            return $http.get("contact/comm_items/" + contact.id + "/");
+        },
+
+        commByMonth: function(contact){
+            return $http.get("contact/by_month/" + contact.id + "/");
         },
 
         contacts : function(){
@@ -268,15 +278,6 @@ Array.prototype.remove = function(item){
     this.splice(index,1);
 };
 
-// app.controller('baseCtrl', function($scope, $rootScope, api){
-//     $scope.busyText = "Loading....";
-//     $scope.$on("showBusy", function(event, text){
-//         $scope.showBusy = true;
-//         $scope.busyText = text;
-//     })
-
-// });
-
 app.controller('userCtrl', function($scope, api){
     $scope.updateMobile = function(){
         api.updateMobile($scope.user.phone).success(function(result){
@@ -293,6 +294,7 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
     $scope.contacts = [];
     $scope.zones = ["Safe", "Inter", "Danger"];
     $scope.seleCtgry = 'personal';
+    $rootScope.contact = null;
 
     api.zones().success(function(result){
         $scope.zone1 = result.p1;
@@ -305,6 +307,9 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
         });
     };
 
+    $scope.setContact = function(contact){
+        $rootScope.contact = contact;
+    };
 
     refreshContacts();
 
@@ -336,10 +341,9 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
         });
     };
 
-
     $scope.toggleCtrgy = function(ctgry){
         $scope.seleCtgry = ctgry;
-        $scope.onCtgryChange();
+        $rootScope.onCtgryChange();
     };
 });
 
@@ -351,7 +355,6 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         $scope.showBusy = false;
         $scope.seleContacts = [];
         $scope.recentMails = [];
-        $scope.mobileEdit = false;
         getRecentMails();
         refreshInbox(false);
     }   
@@ -406,46 +409,52 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
     function onImport(result){
         $scope.statusMsg = result.count + " mails imported";
         if(result.count > 0) {
-            // refreshContacts();
             getRecentMails();
         }
         $rootScope.showBusy = false;
     }
 
-    $rootScope.setContact = function(contact){
-        $scope.contact = contact;
-        if(!$scope.seleContacts.containsById(contact)){
-            $scope.seleContacts.push(contact);
-        }
-        $scope.mails = $scope.calls = $scope.lnDuplicates = [];
+    $rootScope.$watch("contact", function(contact, oldContact){
+        if(!contact) return;
+        $scope.recentMode = false;
         api.lnDuplicates(contact.id).success(function(result){
             $scope.lnDupes = result;
         }); 
 
-        api.mails(contact.id).success(function(result){
-            addMailsUrl(result);
-            $scope.contactMails = result;
-            $scope.showContact();
-        });
-
-        api.calls(contact.id).success(function(result){
-            $scope.calls = result
+        api.commItems(contact).success(function(result){
+            formatCommItems(result);
+            $scope.commItems = result;
         });
 
         api.duplicates(contact).success(function(result){
             $scope.duplicates = result
         });
-    };
+    });
 
-    $scope.showRecent = function(){
-        $scope.mails = $scope.recentMails;
-        $scope.recentMode = true;
-    };
 
-    $scope.showContact = function(){
-        $scope.mails = $scope.contactMails;
-        $scope.recentMode = false;
-    };
+    function formatCommItems(items){
+        for(var i = 0; i < items.length; i++){
+
+            var item = items[i];
+            item.dclass = item.direction == 1 ? item.dclass = "glyphicon-chevron-left" : "glyphicon-chevron-right";
+
+            switch (item.type){
+                case 2:
+                    item.tclass = "glyphicon-comment";
+                    break;
+                case 3:
+                    item.tclass = "glyphicon-earphone";
+                    break;
+                default:
+                    item.tclass = "glyphicon-envelope";
+            }
+
+            if(item.mail_id){
+                item.url = "https://mail.google.com/mail/u/0/#inbox/" + item.mail_id;
+            }
+        }
+    }
+
 
     function addMailsUrl(mails){
         for(var i = 0; i < mails.length; i++){
@@ -453,27 +462,60 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         }
     }
 
-    $scope.removeContact = function(contact){
-        var contacts = $scope.seleContacts;
-        contacts.remove(contact);
-        debugger;
-        if(contact == $scope.contact){
-            if(contacts.length > 0){
-                $scope.setContact(contacts[0]);
-            } else{
-                $scope.showMail = false;
-            }
-        }
-    }
-
     function getRecentMails(){
         api.recentMails().success(function(result){
-            if($scope.contact == null) addMailsUrl(result);
+            addMailsUrl(result);
             $scope.recentMails = result;
-            $scope.showRecent();
+            $scope.recentMode = true;
         });
     }
 
     init();
+
+});
+
+
+
+app.controller("statCtrl", function($scope, $rootScope, $timeout, api) {
+    $rootScope.$watch("contact", function(contact, oldContact){
+        if(contact){
+            api.commByMonth(contact).success(function(result){
+                var data = []
+                for(var i = 0; i < result.length; i++){
+                    var item = {
+                        x : result[i].month,
+                        y : [result[i].mail_count, result[i].call_count],
+                    };
+                    data.push(item);
+                }
+                $timeout(function() {
+                    $scope.data = {
+                        title:'',
+                        series: ['mails', 'calls'],
+                        data : data,
+                        tooltips:true,
+                    };
+                }, 100);
+            });
+
+            $scope.config = {
+                title : contact.name,
+                tooltips: true,
+                labels: false,
+                mouseover: function() {},
+                mouseout: function() {},
+                click: function() {},
+                legend : {
+                    display:true,
+                    position:'left'
+                },
+                innerRadius: 0
+            };
+
+        }   
+    });
+
+    $scope.chartType = 'line';
+
 
 });

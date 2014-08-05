@@ -7,18 +7,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src='/static/angular.min.js'></script>
 	<script src='/static/angular-animate.min.js'></script>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src='/static/angular-charts.min.js'></script>
 	<script src='/static/_common.js'></script>
-	<style type="text/css">
-
-	</style>
 </head>
 <body ng-app="app">
+	{% verbatim %}
 	<div>
 		<div id="banner" ng-controller="userCtrl">
 			<!-- <img src="{{user.image_url}}"> -->
 			<ul style="width:100%">
-				<li><img src="/static/img/tree1.png" style="height:20px;"><span class="product">Contact Tree<span></li><li><span class="glyphicon glyphicon-user"></span>{[user.name]}</li><li><span class="glyphicon glyphicon-envelope"></span>{[user.email]}</li><li>
-					<span class="glyphicon glyphicon-phone"></span><span ng-hide="mobileEdit">{[user.phone]} <span class="glyphicon glyphicon-edit btn-icon" ng-click="mobileEdit=true"></span></span> 
+				<li><img src="/static/img/tree1.png" style="height:20px;"><span class="product">Contact Tree<span></li><li><span class="glyphicon glyphicon-user"></span>{{user.name}}</li><li><span class="glyphicon glyphicon-envelope"></span>{{user.email}}</li><li>
+					<span class="glyphicon glyphicon-phone"></span><span ng-hide="mobileEdit">{{user.phone}} <span class="glyphicon glyphicon-edit btn-icon" ng-click="mobileEdit=true"></span></span> 
 					<span ng-show="mobileEdit"><input type="text" ng-model="user.phone"><span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateMobile()"></span></span>
 				</li>
 				<!-- <li ng-show="user.ln_count==0"><a href="/lkdn"><span class="glyphicon glyphicon-download-alt"></span> Import from Linkdin</a></li> -->
@@ -26,11 +26,11 @@
 		</div>
 		<div>
 			<busy show='showBusy'>
-				<div style="text-align:center;">{[busyText]}</div>
+				<div style="text-align:center;">{{busyText}}</div>
 			</busy>
 			<div style="display:inline-block;width:50%;float:left" ng-controller="zoneCtrl">
 				<ul class="ctgry-lst">
-					<li slide-toggle="#zoneCtnr" style="border: 1px solid #E9E9EA;color: #d83;text-align: right;border-width: 0px 1px 1px 0;" class="repeated-item" ng-class={sele:showZoneSet}><span class="glyphicon glyphicon-cog"></span></li><li ng-repeat="c in ctgrys" ng-class="{sele:seleCtgry == c}" ng-click="toggleCtrgy(c)">{[c]}</li>
+					<li slide-toggle="#zoneCtnr" style="border: 1px solid #E9E9EA;color: #d83;text-align: right;border-width: 0px 1px 1px 0;" class="repeated-item"><span class="glyphicon glyphicon-cog"></span></li><li ng-repeat="c in ctgrys" ng-click="toggleCtrgy(c)" ng-class="{sele:seleCtgry == c}">{{c}}</li>
 				</ul>
 				<div id="zoneCtnr" class="slideable">
 					<table id="zoneEdit">
@@ -62,11 +62,13 @@
 				</div>
 				<table id="zone">
 					<tr ng-repeat="z in zones">
-						<td class="head">{[z]}</td>
+						<td class="head">{{z}}</td>
 						<td>
 							<ul class="cnt-lst">
 								<li class="repeated-item" ng-repeat="h in contacts|filter:{status:0, zone:$index}" class="repeated-item">
-									<div class="name" title="{[h.email]} | {[h.mobile]}" ng-click="setContact(h)">{[h.name]} <span class="delta">{[h.delta]}</span></div>
+									<span class="glyphicon glyphicon-star" ng-class="{star:h.is_star}" ng-click="h.is_star=true"></span>
+									<div class="name" title="{{h.email}} | {{h.mobile}}" ng-click="setContact(h)">{{h.name}}</div>
+									<span class="delta">{{h.delta}}</span>	
 									<a class="remove" title="unfollow" ng-click="updateStatus(h,1)">x</a>
 								</li>
 							</ul>
@@ -77,68 +79,84 @@
 						<td style="border-bottom:1px solid #E9E9EA;">
 							<ul class="cnt-lst">
 								<li ng-repeat="h in contacts|filter:{status:1}">
-									<div class="name" title="{[h.email]}" ng-click="setContact(h)">{[h.name]}</div>
+									<div class="name" title="{{h.email}}" ng-click="setContact(h)">{{h.name}}</div>
 									<a class="remove" title="unfollow" ng-click="updateStatus(h,0)">+</a>
 								</li>
 							</ul>
 						</td>
 					</tr>
 				</table>
+				<div ng-controller="statCtrl" style="padding:30px 2px 2px 40px;" ng-hide="contact==null">
+						<div ac-chart="chartType" ac-data="data" ac-config="config"></div>
+				</div>
 			</div>
 			<div style="display:inline-block;width:50%;" ng-controller="contactCtrl">
 
 				<div>
 					<ul id="mailTab">
-						<li ng-class="{sele:recentMode}" ng-click="showRecent()">Recent Mails</li><li ng-class="{sele:!recentMode}" ng-hide="contact==null" ng-click="showContact()">{[contact.name]}</li>
+						<li ng-class="{sele:recentMode}" ng-click="recentMode=true">Recent Mails</li><li ng-class="{sele:!recentMode}" ng-hide="contact==null" ng-click="recentMode=false">{{contact.name}}</li>
 					</ul>
 					<ul class="ctrl-lst">
 						<li ng-click="refreshInbox()" title="Refresh Inbox"><span class="glyphicon glyphicon-refresh"></span></li><li ng-click="importInbox()" title="Import Old Mails"><span class="glyphicon glyphicon-save"></span></li>
 					</ul>
 				</div>	
-				<div style="width:100%;"  class="mailLst">
-					<ul ng-class="{hide:recentMode}" class="mail-id">
+				<div style="width:100%;"  class="mailLst" ng-show="recentMode">
+					<table>
+						<tr class="repeated-item" ng-repeat="m in recentMails">
+							<td class="first dim">{{m.folder}}</td>
+							<td class="from trim"><a target="blank" href="{{m.url}}">{{m.name}}</a></td>
+							<td><a class="subject trim" target="blank" href="{{m.url}}"> {{m.subject}} </a></td>
+							<td class="date"><a target="blank" href="{{m.url}}">{{m.date | date_mdy}}</a></td>
+						</tr>
+					</table>
+				</div>
+				<div style="width:100%;"  class="mailLst" ng-hide="recentMode">
+					<ul class="mail-id">
 						<li>
-							<span class="glyphicon glyphicon-info-sign"></span> {[contact.category]}
+							<span class="glyphicon glyphicon-info-sign"></span> {{contact.category}}
 							<span class="glyphicon glyphicon-edit btn-icon" ng-click="ctgryEdit=true" ng-hide="ctgryEdit"></span>
 							<ul class="ctgry-edit-lst" ng-show="ctgryEdit">
-								<li class="repeated-item" ng-repeat="c in ctgrys" ng-click="updateCtrgy(c)">{[c]}</li>
+								<li class="repeated-item" ng-repeat="c in ctgrys" ng-click="updateCtrgy(c)">{{c}}</li>
 								<li style="padding:0"><input placeholder="new category" type="text" ng-model="newCtgry"> <span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateCtrgy(newCtgry)"></span></li>
 							</ul>
 						</li>
 						<li>
-							<span class="glyphicon glyphicon-envelope"></span> {[contact.email]}
+							<span class="glyphicon glyphicon-envelope"></span> {{contact.email}}
 						</li>
 						<li>
-							<span class="glyphicon glyphicon-phone"></span> {[contact.mobile]}
+							<span class="glyphicon glyphicon-phone"></span> {{contact.mobile}}
 						</li>
 					</ul>
-					<table class="ln-dupe" ng-class="{hide:recentMode}">
+					<table class="ln-dupe">
 						<tr class="repeated-item" ng-repeat="l in lnDupes">
-							<td class="img"><img src="{[l.image_url]}"></div>
-							<td><a href="{[l.profile_url]}" class="name" target="_blank">{[l.name]}</a><div class="dim">{[l.headline]}</div></div>
+							<td class="img"><img ng-src="{{l.image_url}}"></td>
+							<td><a href="{{l.profile_url}}" class="name" target="_blank">{{l.name}}</a><div class="dim">{{l.headline}}</div></td>
 						</tr>
 					</table>
 					<table>	
-						<tr class="repeated-item" ng-repeat="c in duplicates" ng-class="{hide:recentMode}">
-							<td class="folder dim"><span class="glyphicon glyphicon-user"></span> D</td>
-							<td class="from">{[c.name]}</td>
-							<td class="subject trim">{[c.email]} | {[c.mobile]}</td>
+						<tr class="repeated-item" ng-repeat="c in duplicates">
+							<td class="first dim"><span class="glyphicon glyphicon-user"></span> D</td>
+							<td class="from">{{c.name}}</td>
+							<td class="subject trim">{{c.email}} | {{c.mobile}}</td>
 							<td>
 								<span ng-hide="c.status" ng-click="merge(c)" class="glyphicon glyphicon-transfer btn-icon"></span>
 								<span ng-show="c.status" class="success glyphicon glyphicon-saved"></span>
 							</td>
-						</tr>					
-						<tr class="repeated-item" ng-repeat="m in mails">
-							<td class="folder dim">{[m.folder]}</td>
-							<td class="from trim"><a target="blank" href="{[m.url]}">{[m.name]}</a></td>
-							<td><a class="subject trim" target="blank" href="{[m.url]}"> {[m.subject]} </a></td>
-							<td class="date"><a target="blank" href="{[m.url]}">{[m.date | date_mdy]}</a></td>
 						</tr>
 					</table>
-				</table>
+					<table>
+						<tr class="repeated-item" ng-repeat="m in commItems">
+							<td class="first type"><span class="glyphicon" ng-class="m.tclass"></span> <span class="glyphicon" ng-class="m.dclass"></span></td>
+							<td class="date"><a target="blank" href="{{m.url}}">{{m.date | date_mdy}}  {{m.date | time}}</a></td>
+							<td><a class="remark trim" target="blank" href="{{m.url}}"> {{m.remark}} </a></td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<div id="statusMsg">{[statusMsg]}</div>
+			<div id="statusMsg">{{statusMsg}}</div>
 		</div>
 	</div>
+	{% endverbatim %}
+
 </body>
 </html>

@@ -19,7 +19,7 @@ input:focus{
 }
 
 a{
-	color: #7bf;
+	color: #777;
 }
 
 input[type=text], input[type=url], input[type=email], textarea, input[type=number], input[type=password]
@@ -458,14 +458,11 @@ form .ctnr{
 	color: #444;
 }
 .cnt-lst .delta{
-	color: #ddd;
 	font-size: 11px;
 	padding: 0 0 0 2px;
+	vertical-align: text-bottom;
 }
 
-.cnt-lst .delta:hover{
-	color: #08e;
-}
 .cnt-lst .name{
 	max-width: 325px;
 	line-height: 20px;
@@ -473,25 +470,37 @@ form .ctnr{
 	display: inline-block;
 	text-overflow: ellipsis;
 	font-size: 12px;
-	height: 20px;
+	height: 22px;
 	vertical-align: middle;
 	color: #999;
 }
 .cnt-lst li{
 display: inline-block;
 background: #fdfdfd;
-padding: 0px 13px;
+padding: 0px 9px;
 margin: 2px 3px 3px 2px;
 height: 21px;
-color: #888;
+color: #ddd;
 cursor: pointer;
 border-radius: 20px;
 border: 1px solid #ebebeb;
 } 
+.cnt-lst li:hover{
+background: #fff;
+color: #19f;
+}
 .cnt-lst{ 
 	list-style-type: none;
 }
 
+.cnt-lst .glyphicon{
+	font-size: 11px;
+	margin: 0 2px 0 0;
+	color: #eee;
+}
+.cnt-lst .glyphicon.star{
+	color: #fc0;
+}
 #zone{
 	background: #fff;
 	width: 100%;
@@ -520,9 +529,9 @@ background: #f9f9f9;
 border-right: 1px solid #E9E9EA;
 }
 
-.mailLst .mail-id{font-size: 13px;color: #19f;}
+.mailLst .mail-id{font-size: 13px;color: #4af;}
 .mailLst .mail-id > li{border-bottom: 1px dotted #ddd;padding:3px 10px 3px 10px;}
-.mailLst .glyphicon{font-size: 11px; color: #888;margin-right: 5px;}
+.mailLst .glyphicon{font-size: 11px; color: #999;margin-right: 5px;}
 .mailLst{
 	width: 100%;
 }
@@ -549,9 +558,11 @@ border-right: 1px solid #E9E9EA;
 }
 
 .mailLst .folder{
-	padding-left: 10px;
-	color: #59b;
 	text-transform: capitalize;
+}
+
+.mailLst tr td::first{
+	padding-left: 10px;
 }
 
 .trim{
@@ -561,15 +572,30 @@ border-right: 1px solid #E9E9EA;
 }
 
 .mailLst .from{
+	display: inline-block;
 	width: 140px;
 	padding-left: 10px;padding: 0 12px 0 24px;
 }
 
+.mailLst .remark{
+	display: inline-block;
+	width: 300px;
+	height: 14px;
+}
 .mailLst .subject{
 	color: #808080;
 	display: inline-block;
 	width: 337px;
+
 	vertical-align: bottom;
+}
+
+.mailLst .glyphicon-chevron-left{
+	color: #8cf;
+}
+
+.mailLst .glyphicon-chevron-right{
+	color: #ddd;
 }
 
 .mailLst .head{
@@ -586,7 +612,9 @@ border-right: 1px solid #E9E9EA;
 }
 
 .mailLst .first{
-	width: 45px;
+	width: 50px;
+	padding-left: 10px;
+	text-transform: capitalize;
 }
 h4{
 	font-size: 14px;
@@ -892,3 +920,8 @@ border-color: #eee;
 .show-hide.ng-hide {
   opacity:1;
 }
+
+		[ac-chart] {
+			width: 90%;
+			height: 250px;
+		}

@@ -17,7 +17,7 @@ class ImportMobile:
         number = contact_info['number'].replace('+91', '')
         name = contact_info['name']
         try:
-            mobile_contact = MobileContact.objects.get(number=number)
+            mobile_contact = MobileContact.objects.get(number=number, user_contact__user__id=self.user.id)
         except:
             mobile_contact = MobileContact()
             mobile_contact.number = number

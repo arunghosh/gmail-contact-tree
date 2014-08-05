@@ -21,8 +21,10 @@ class ByZoneMgr:
             c.zone = self.inter
         else:
             c.zone = self.unsafe
+        return c
 
-
-    def update_zone(self):
-        [self.__set_zone(c) for c in self.contacts]
-        return self.contacts
+    @property
+    def contacts_with_zone(self):
+        result = [self.__set_zone(c) for c in self.contacts]
+        result.sort(key=lambda x: x.delta)
+        return result
