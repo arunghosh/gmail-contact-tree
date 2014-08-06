@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from contact import ContactStatus
 
+
 class ByZoneMgr:
 
     def __init__(self, user):
@@ -12,7 +13,7 @@ class ByZoneMgr:
         self.unsafe_delta = user.delta_danger
         self.today = datetime.now().date()
 
-    def __set_zone(self, c):
+    def get_contact_with_zone(self, c):
         delta = (self.today - c.last_contacted_on).days
         c.delta = delta
         if delta < self.safe_delta:
@@ -25,6 +26,6 @@ class ByZoneMgr:
 
     @property
     def contacts_with_zone(self):
-        result = [self.__set_zone(c) for c in self.contacts]
+        result = [self.get_contact_with_zone(c) for c in self.contacts]
         result.sort(key=lambda x: x.delta)
         return result

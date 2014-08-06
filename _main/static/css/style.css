@@ -477,13 +477,13 @@ form .ctnr{
 .cnt-lst li{
 display: inline-block;
 background: #fdfdfd;
-padding: 0px 9px;
-margin: 2px 3px 3px 2px;
+padding: 0px 5px;
+margin: 1px 1px 0 0;
 height: 21px;
-color: #ddd;
+color: #19f;
 cursor: pointer;
-border-radius: 20px;
-border: 1px solid #ebebeb;
+border-radius: 5px;
+border: 1px solid #e8e8e8;
 } 
 .cnt-lst li:hover{
 background: #fff;
@@ -507,7 +507,7 @@ color: #19f;
 }
 
 #zone td{
-	padding: 5px;
+	padding: 2px;
 	border: 1px solid #f2f2f2;
 	border-width: 0 0 1px 0; 
 }
@@ -522,12 +522,20 @@ ul{
 #zone .head{
 font-weight: bold;
 text-align: right;
+padding: 1px 5px;
 width: 80px;
-color: #888;
+cursor: pointer;
+color: #ccc;
 padding-top: 7px;
 background: #f9f9f9;
 border-right: 1px solid #E9E9EA;
 }
+
+#zone .head.active{
+color: #777;
+}
+
+
 
 .mailLst .mail-id{font-size: 13px;color: #4af;}
 .mailLst .mail-id > li{border-bottom: 1px dotted #ddd;padding:3px 10px 3px 10px;}
@@ -584,7 +592,7 @@ width: 120px;
 .mailLst .subject{
 	color: #808080;
 	display: inline-block;
-	width: 337px;
+	width: 360px;
 
 	vertical-align: bottom;
 }
@@ -615,6 +623,11 @@ width: 120px;
 	padding-left: 10px;
 	text-transform: capitalize;
 }
+
+.mailLst .second{
+	width: 120px;
+}
+
 h4{
 	font-size: 14px;
 	margin: 0;
@@ -749,6 +762,18 @@ background: #eee;
 	border-bottom: 1px dotted #ddd;
 }
 
+
+.cn-dupe{
+	color: #999;
+}
+.cn-dupe tr{
+	background: #f9f9f9;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.cn-dupe .glyphicon{
+}
+
 #banner{
 	background:#444;
 	line-height: 22px;
@@ -781,9 +806,14 @@ border-left: 1px solid #222;
 padding: 0 12px 0 24px;
 }
 
+#logo{
+	position:absolute;left:66px;top:2px;cursor:pointer;color:#fbfbfb;font-size:28px;
+}
+
 #banner .product{
 	font-weight: bold;
 	text-transform: uppercase;
+	padding-left: 70px;
 	color: #ccc;
 }
 .btn-icon:hover{
@@ -908,19 +938,73 @@ border-color: #eee;
 
 
 
-.show-hide {
-  opacity: 1;
-  -webkit-animation:0.8s my_animation;
-  -moz-animation:0.8s my_animation;
-  -o-animation:0.8s my_animation;
-  animation:0.8s my_animation;
-}
-
-.show-hide.ng-hide {
-  opacity:1;
+.search-inp{
+border: 1px solid #eee;
+padding: 2px 5px;
 }
 
 		[ac-chart] {
 			width: 90%;
 			height: 250px;
 		}
+
+.f-16{font-size: 16px!important;}
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+	.node {
+    cursor: pointer;
+  }
+
+  .overlay{
+      background-color:#EEE;
+  }
+   
+  .node circle {
+    fill: #888;
+    stroke: #ccc;
+    stroke-width: 0px;
+  }
+   
+  .node text {
+    font-size:10px; 
+    font-family:sans-serif;
+  }
+   
+  .link {
+    fill: none;
+    stroke: #ddd;
+    stroke-width: 1px;
+  }
+
+  .templink {
+    fill: none;
+    stroke: red;
+    stroke-width: 3px;
+  }
+
+  .ghostCircle.show{
+      display:block;
+  }
+
+  .ghostCircle, .activeDrag .ghostCircle{
+       display: none;
+  }

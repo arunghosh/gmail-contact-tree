@@ -46,11 +46,14 @@ class DuplicateContacts(APIView):
         return Response(slz.data)
 
 
-class MergeContacts(JSONResponseMixin, View):
+class MergeContacts(APIView):
 
     @transaction.atomic
     def post(self, request):
         data = json.loads(request.read())
         merge = Merge(data['org_id'], data['dup_id'])
         merge.execute()
-        return self.get_json_response({'status':True})
+        manager = ByZoneMgr(request.user)
+        contact = manager.get_contact_with_zone(merge.org)
+        slz = ContactZoneSerializer(contact)
+        return Response(slz.data)
