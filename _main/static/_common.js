@@ -56,6 +56,8 @@ var Calender = function(){
     }
 };
 
+
+
 var common = new function() {
     this.withCommas = function(x){
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -81,8 +83,6 @@ app.config(function($interpolateProvider, $httpProvider) {
     $httpProvider.defaults.headers.post['X-CSRFToken'] = common.readCookie('csrftoken');
 });
 
-
-
 app.directive('slideable', function () {
     return {
         restrict:'C',
@@ -105,28 +105,6 @@ app.directive('slideable', function () {
             };
         }
     };
-});
-
-app.directive('slideToggle', function() {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attrs) {
-            var target = document.querySelector(attrs.slideToggle);
-            attrs.expanded = false;
-            element.bind('click', function() {
-                var content = target.querySelector('.slideable_content');
-                if(!attrs.expanded) {
-                    content.style.border = '1px solid rgba(0,0,0,0)';
-                    var y = content.clientHeight;
-                    content.style.border = 0;
-                    target.style.height = y + 'px';
-                } else {
-                    target.style.height = '0px';
-                }
-                attrs.expanded = !attrs.expanded;
-            });
-        }
-    }
 });
 
 app.directive('modalDialog', function() {
@@ -240,7 +218,7 @@ app.factory('api', function($http){
             return $http.get('setting/zones');
         },
 
-        updateZones : function(z1, z2){
+        updateZoneSetting : function(z1, z2){
             return $http.post('setting/zones/', {'p1':z1,'p2':z2});
         },
 
@@ -278,7 +256,12 @@ Array.prototype.remove = function(item){
 };
 
 app.controller('userCtrl', function($scope, $rootScope, api){
-    $rootScope.treeView = false;
+
+    $rootScope.setBusy = function(msg){
+        $rootScope.showBusy = true;
+        $rootScope.busyText = msg;
+    };
+
     $scope.updateMobile = function(){
         api.updateMobile($scope.user.phone).success(function(result){
             $scope.mobileEdit = false;
@@ -288,49 +271,46 @@ app.controller('userCtrl', function($scope, $rootScope, api){
     api.userInfo().success(function(result){
         $scope.user = result;
     })
-});
 
-app.controller('zoneCtrl', function($scope, api, $rootScope){
-    $scope.contacts = [];
-    $scope.zones = ["Safe", "Inter", "Danger"];
-    $scope.seleCtgry = 'personal';
+    $rootScope.treeView = false;
     $rootScope.contact = null;
-    $scope.showZone = [true,true,true,false];
 
-    api.zones().success(function(result){
-        $scope.zone1 = result.p1;
-        $scope.zone2 = result.p2;
-    });
-
-    $scope.updateZone = function(){
-        api.updateZones($scope.zone1, $scope.zone2).success(function(){
-            $scope.showZoneSet = false;
-        });
-    };
-
-    $scope.setContact = function(contact){
+    $rootScope.setContact = function(contact){
         $rootScope.contact = contact;
     };
 
-    refreshContacts();
+    api.contacts().success(function(result){
+        $rootScope.allContacts = result;
+    });
 
-    function refreshContacts(){
-        api.contacts().success(function(result){
-            $scope.contacts = result;
-            $rootScope.allContacts = result.slice();
-            var ctgrys = result.map(function(c){
+    $rootScope.$watch("allContacts", function(newContacts, oldContacts)
+    {
+        if(newContacts) {
+            onAllContactsUpdate();
+        }
+    });
+
+    $rootScope.onContactUpdate = function(){
+        onAllContactsUpdate();
+    };
+
+    function onAllContactsUpdate(){
+        function updateCtrgys()
+        {
+            // $scope.contacts = $scope.allContacts.slice();
+            var ctgrys = $scope.allContacts.map(function(c){
                 return c.category;
             });
+            ctgrys.sort();
             $rootScope.ctgrys = ctgrys.reduce(function(a,b){
                 if(a.indexOf(b) < 0) a.push(b);
                 return a;
             },[]);
-            $scope.onCtgryChange();
-            setTreeView();
-        });
-    }
+            $rootScope.masterCtgrys = $rootScope.ctgrys.slice();
+            $rootScope.onCtgryChange();        
+        }
 
-    function setTreeView(){
+        function updateTreeView(){
             var temp = {'name':'contacts', 'children':[]};
             for(var i = 0; i < $rootScope.ctgrys.length; i++){
                 var item = {'name':$rootScope.ctgrys[i], 'children':[]}
@@ -338,17 +318,15 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
                     if($rootScope.ctgrys[i] === b.category) a.push(b);
                     return a;
                 }, [])
-                var zones = [
-                    {'name':'safe','color':'#5c5','contacts':[]},
-                    {'name':'inter','color':'#d82','contacts':[]},
-                    {'name':'inter','color':'#d33','contacts':[]}];
+                var mgnr = new ContactMgr();
+                var zones = mgnr.zones;
                 for(var j = 0; j < contacts.length; j++){
                     var contact = contacts[j];
-                    var zone = zones[contact.zone];
+                    var zone = zones[mgnr.getZone(contact)];
                     var cItem = {'name':contact.delta + " - " + contact.name,'color':zone.color};
                     zone.contacts.push(cItem);
                 }
-                for(var c = 0;c < 3; c++){
+                for(var c = 0;c < 4; c++){
                     var zone = zones[c];
                     item.children.push({
                         'name': zone.name + ' #' + zone.contacts.length, 
@@ -358,68 +336,118 @@ app.controller('zoneCtrl', function($scope, api, $rootScope){
                 temp.children.push(item);
             }
             treeView.showTree(temp);
+        }
+
+        updateCtrgys();
+        updateTreeView();
+    }
+});
+
+var Zone = function(id, name, color, show){
+    this.id = id;
+    this.name = name;
+    this.color = color;
+    this.nextStatus = name === "removed" ? 10 : 20;
+    this.show = show;
+    this.contacts = [];
+};
+
+var ContactMgr = function(){
+    this.impIndex = 5;
+    this.zones = [
+                new Zone(0,'safe','#5c5', true),
+                new Zone(1,'inter','#d84', true), 
+                new Zone(2,'danger','#d33', true),
+                new Zone(3,'removed','#888', false)];
+
+    this.updateContacts = function(contacts){
+        this.contacts = contacts;
+        this.refreh();
+    };
+
+    this.getZone = function(contact){
+        return contact.status == 20 ? 3 : contact.zone;
     }
 
-    $rootScope.onCtgryChange = function(){
-        $scope.contacts = $rootScope.allContacts.reduce(function(a,b){
-            if($scope.seleCtgry === b.category) a.push(b);
-            return a;
-        }, [])
-    }    
+    this.refreh = function(){
+        var contacts = this.contacts;
+        for(var i = 0; i < this.zones.length; i++) this.zones[i].contacts = [];
+        for(var c = 0; c < contacts.length; c++){
+            var contact = contacts[c];
+            this.zones[this.getZone(contact)].contacts.push(contact)
+        }
+    };        
+};
 
-    $scope.updateStatus = function(contact, status){
-        api.updateStatus(contact.id, status).success(function(result){
-            contact.status = status;
+app.controller('zoneCtrl', function($scope, api, $rootScope){
+    $scope.contacts = [];
+    $scope.manager = new ContactMgr();
+    $scope.seleCtgry = null;
+
+    api.zones().success(function(result){
+        $scope.zone1 = result.p1;
+        $scope.zone2 = result.p2;
+    });
+
+    $scope.toggleCtgry = function(ctgry){
+        if($rootScope.ctgrys.contains(ctgry)){
+            $rootScope.ctgrys.remove(ctgry);
+        } else{
+            $rootScope.ctgrys.push(ctgry);
+        }
+        $rootScope.ctgrys.sort();
+    };
+
+    $scope.updateSettings = function(){
+        $rootScope.setBusy("updating settings...");
+        api.updateZoneSetting($scope.zone1, $scope.zone2).success(function(){
+            window.location = "/";
         });
     };
 
-    $scope.toggleCtrgy = function(ctgry){
+    $rootScope.onCtgryChange = function(){
+        $scope.seleCtgry = $scope.seleCtgry ? $scope.seleCtgry : $rootScope.ctgrys[0];
+        if($scope.seleCtgry === "*"){
+            $scope.contacts = $rootScope.allContacts.reduce(function(a,b){
+                if(b.status == $scope.manager.impIndex) a.push(b);
+                return a;
+            }, [])
+
+        } else {
+            $scope.contacts = $rootScope.allContacts.reduce(function(a,b){
+                if($scope.seleCtgry === b.category) a.push(b);
+                return a;
+            }, [])
+        }
+        if(!$rootScope.contact)$rootScope.contact = $scope.contacts[0];
+        fillZoneContacts();
+    };
+
+    function fillZoneContacts(){
+        $scope.manager.updateContacts($scope.contacts);
+        $scope.zones = $scope.manager.zones;    
+    }
+
+    $scope.updateFollow = function(contact, status){
+        api.updateStatus(contact.id, status).success(function(result){
+            contact.status = status;
+            fillZoneContacts();
+        });
+    };
+
+    $scope.selectCtrgy = function(ctgry){
         $scope.seleCtgry = ctgry;
         $rootScope.onCtgryChange();
     };
 });
 
-app.controller('contactCtrl', function($scope, api, $rootScope){
-    // $scope.$emit("abcd");
-    function init()
-    {
-        $scope.mails = [];
-        $scope.showBusy = false;
-        $scope.recentMails = [];
-        getRecentMails();
-        refreshInbox(false);
-    }   
 
-    $scope.merge = function(dupeContact){
-        var seleContact = $rootScope.contact;
-        api.merege(seleContact, dupeContact).success(function(result){
-            $rootScope.allContacts.remove(seleContact);
-            $rootScope.allContacts.remove(dupeContact);
-            $rootScope.allContacts.push(result);
-            $rootScope.contact = result;
-            dupeContact.email = "";
-            dupeContact.status = true;
-            refreshCommItems();
-            $rootScope.onCtgryChange();
-        });
-    };
+app.controller('inboxCtrl', function($scope, api, $rootScope){
 
-    $scope.updateCtrgy = function(ctgry){
-        api.updateCtrgy($rootScope.contact.id, ctgry).success(function(){
-            $rootScope.contact.category = ctgry;
-            $rootScope.ctgryEdit = false;
-            $rootScope.onCtgryChange();
-        });
-    };
+    $scope.busyMsg = null;
 
     $scope.refreshInbox = function(){
-        refreshInbox(true);
-    }
-
-    function refreshInbox(showBusy)
-    {
-        $rootScope.showBusy = showBusy;
-        $rootScope.busyText = "Fetching latest mails....";
+        $scope.busyMsg = "Fetching latest mails....";
         api.refreshInbox().success(function(result){
             onImport(result);
         }).error(function(){
@@ -430,15 +458,13 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
     };
 
     $scope.importInbox = function(){
-        $rootScope.showBusy = true;
-        $rootScope.busyText = "Importing Old Mails....";
+        $scope.busyMsg = "Importing Old Mails....";
         api.importInbox().success(function(result){
             onImport(result);
         }).error(function(){
             onAccessFail();    
         });
     };
-
 
     function onAccessFail(){
         $scope.busyText = "Access Failed. Refreshing GMAIL Access Token....";
@@ -450,8 +476,56 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         if(result.count > 0) {
             getRecentMails();
         }
-        $rootScope.showBusy = false;
+        $scope.busyMsg = null;
     }
+
+    function getRecentMails(){
+        api.recentMails().success(function(result){
+            addMailsUrl(result);
+            $scope.mails = result;
+        });
+    }
+
+    function addMailsUrl(mails){
+        for(var i = 0; i < mails.length; i++){
+            mails[i].url = "https://mail.google.com/mail/u/0/#inbox/" + mails[i].message_id;
+        }
+    }
+
+    getRecentMails();
+    $scope.refreshInbox();
+});
+
+
+app.controller('contactCtrl', function($scope, api, $rootScope){
+    // $scope.$emit("abcd");
+    function init()
+    {
+        $scope.showBusy = false;
+    }   
+
+    $scope.merge = function(dupeContact){
+        var seleContact = $rootScope.contact;
+        api.merege(seleContact, dupeContact).success(function(result){
+            var allContacts = $rootScope.allContacts.slice();
+            allContacts.remove(seleContact);
+            allContacts.remove(dupeContact);
+            allContacts.push(result);
+            $rootScope.allContacts = allContacts;
+            $rootScope.contact = result;
+            dupeContact.email = "";
+            dupeContact.isMerged = true;
+        });
+    };
+
+    $scope.updateCtrgy = function(ctgry){
+        api.updateCtrgy($rootScope.contact.id, ctgry).success(function(){
+            $rootScope.contact.category = ctgry;
+            $rootScope.ctgryEdit = false;
+            $rootScope.onContactUpdate();
+        });
+    };
+
 
     $scope.$watch("dupeName", function(name, oldName){
         if(name){
@@ -465,7 +539,6 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
 
     $rootScope.$watch("contact", function(contact, oldContact){
         if(!contact) return;
-        $scope.recentMode = false;
         api.lnDuplicates(contact.id).success(function(result){
             $scope.lnDupes = result;
         }); 
@@ -477,7 +550,6 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         });
     });
 
-
     function refreshCommItems(){
           api.commItems($rootScope.contact).success(function(result){
             formatCommItems(result);
@@ -485,13 +557,10 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         });      
     }
 
-
     function formatCommItems(items){
         for(var i = 0; i < items.length; i++){
-
             var item = items[i];
             item.dclass = item.direction == 1 ? item.dclass = "glyphicon-chevron-left" : "glyphicon-chevron-right";
-
             switch (item.type){
                 case 2:
                     item.tclass = "glyphicon-comment";
@@ -509,25 +578,8 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         }
     }
 
-
-    function addMailsUrl(mails){
-        for(var i = 0; i < mails.length; i++){
-            mails[i].url = "https://mail.google.com/mail/u/0/#inbox/" + mails[i].message_id;
-        }
-    }
-
-    function getRecentMails(){
-        api.recentMails().success(function(result){
-            addMailsUrl(result);
-            $scope.recentMails = result;
-            $scope.recentMode = true;
-        });
-    }
-
     init();
-
 });
-
 
 
 app.controller("statCtrl", function($scope, $rootScope, $timeout, api) {
@@ -553,7 +605,6 @@ app.controller("statCtrl", function($scope, $rootScope, $timeout, api) {
             });
 
             $scope.config = {
-                title : contact.name,
                 tooltips: true,
                 labels: false,
                 mouseover: function() {},

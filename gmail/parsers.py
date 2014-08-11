@@ -16,7 +16,7 @@ class InboxImport:
         self.user = user
         self.service = Auth.get_gmail_srv(user)
         self.count = 0
-        self.max_count = 20
+        self.max_count = 14
         self.is_refresh = False
         self.can_import = True
 
@@ -98,15 +98,17 @@ class ContactsImport:
         return contact
 
     def save(self):
-        if len(self.contacts) > 4:  #or self.type == MailDirection.CC:
-            return
+        # if len(self.contacts) > 4:  #or self.type == MailDirection.CC:
+        #     return
         for c in [c for c in self.contacts if c.email != self.user.email and len(c.email) > 4]:
-            c = self.__save_contact(c)
-            contact_mail = MailContactMap()
-            contact_mail.mail_contact = c
-            contact_mail.mail = self.mail
-            contact_mail.type = self.type
-            contact_mail.save()
+            if self.mail.type == MailDirection.FROM or self.type == MailDirection.FROM:
+                c = self.__save_contact(c)
+                contact_mail = MailContactMap()
+                contact_mail.mail_contact = c
+                contact_mail.mail = self.mail
+                contact_mail.type = self.type
+                contact_mail.save()
+        return
 
 
 class MailImport:
@@ -150,20 +152,20 @@ class MailImport:
             value = head['value']
             if MailDirection.value(name):
                 self.__import_contacts(value, MailDirection.value(name))
-            elif name == 'date':
-                if len(value) > 28:
+            elif name == 'date' and len(value) > 10:
+                if value[:1].isalpha():
                     self.mail.date = datetime.strptime(value[0:25].strip(), "%a, %d %b %Y %X")
                 else:
                     self.mail.date = datetime.strptime(value[0:20].strip(), "%d %b %Y %X")
             elif name == 'subject':
                 self.mail.subject = value
-        #this is handle mails to arun.ghosh@gmail.com
+        #this handle mails to arun.ghosh@gmail.com
         self.mail.type = self.mail.type if self.mail.type else MailDirection.TO
 
     def import_msg(self):
         if not self.__is_exist():
             self.__import_msg()
-            if self.mail.date:
+            if self.mail.date and self.mail.folder != "draft":
                 self.mail.save()
                 # print len(self.contact_imports)
                 [c.save() for c in self.contact_imports]

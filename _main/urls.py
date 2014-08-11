@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
-from auth.views import login
+from auth.views import login, logout
 from contact.views import UpdateMobile, UpdateCtgry, UpdateFollowStatus, CommItemsView, MonthView
 from gmail.views import login as gmail_login, callback, RefreshInboxView, ImportInboxView
 from inbox.views import  MailListView, RecentMailsView
@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', home),
     url(r'^login/$', login, name='login'),
+    url(r'^logout/$', logout),
     url(r'^update_mobile/(?P<mobile>[0-9]*)/$', UpdateMobile.as_view()),
     url(r'^user_info/$', UserInfo   .as_view()),
 

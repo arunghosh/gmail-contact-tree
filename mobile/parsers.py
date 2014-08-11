@@ -13,6 +13,8 @@ class ImportMobile:
         self.user = MyUser.objects.get(phone=info['number'])
         self.__import_contacts()
 
+    # def __update_last_contacted
+
     def __get_contact(self, contact_info):
         number = contact_info['number'].replace('+91', '')
         name = contact_info['name']

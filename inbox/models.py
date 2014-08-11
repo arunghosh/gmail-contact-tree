@@ -1,7 +1,6 @@
 from django.db import models
 from common.models import BaseModel
 from auth.models import MyUser
-from contact import ContactStatus
 from contact.models import UserContact
 
 

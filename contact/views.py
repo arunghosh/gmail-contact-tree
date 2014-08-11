@@ -17,8 +17,15 @@ class UpdateFollowStatus(JSONResponseMixin, View):
         c = UserContact.objects.get(pk=cid)
         c.status = status
         c.save()
-        return self.render_json_response({})
+        return self.render_json_response({'status':True})
 
+class UpdateStarStatus(JSONResponseMixin, View):
+
+    def post(self, request, cid, status):
+        c = UserContact.objects.get(pk=cid)
+        c.status = status
+        c.save()
+        return self.render_json_response({})
 
 class UpdateMobile(JSONResponseMixin, View):
 

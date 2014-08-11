@@ -8,7 +8,7 @@ class MailListView(APIView):
 
     def get(self, request, cid):
         contact = UserContact.objects.get(pk=cid)
-        mails = contact.valid_mails
+        mails = contact.mails
         slz = MailSerializer(mails, many=True)
         return Response(slz.data)
 

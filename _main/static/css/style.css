@@ -175,7 +175,7 @@ label{
 body
 {
 	color:#494949;
-	background: #fbfbfb;
+	/*background: #fbfbfb;*/
 	margin:0;
 	font-size: 12px;
 	padding:0;
@@ -302,24 +302,6 @@ input.ng-valid.ng-dirty {
 
 form .ctnr{
 	margin: 0 0 10px 0;
-}
-
-.mob-banner{
-	background: #555;
-	color: #fff;
-}
-.mob-banner a{
-	float: right;
-	border-radius: 0px;
-	padding: 6px 20px;
-}
-.mob-banner h5{
-	display: inline-block;
-	margin-left: 10px;
-	font-weight: normal;
-	color: #fff;
-	font-size: 16px;
-	height: 14px;
 }
 
 .ng-modal-overlay {
@@ -520,56 +502,90 @@ ul{
 	margin: 0;
 }
 #zone .head{
-font-weight: bold;
-text-align: right;
-padding: 1px 5px;
-width: 80px;
-cursor: pointer;
-color: #ccc;
-padding-top: 7px;
-background: #f9f9f9;
-border-right: 1px solid #E9E9EA;
+	font-weight: bold;
+	text-align: right;
+	padding: 1px 5px;
+	width: 80px;
+	cursor: pointer;
+	color: #ccc;
+	padding-top: 7px;
+	background: #f9f9f9;
+	border-right: 1px solid #E9E9EA;
+	text-transform: capitalize;
 }
 
 #zone .head.active{
 color: #777;
 }
 
+.ctgry-toggle{
+	margin: 10px;
+}
+.ctgry-toggle li{
+	display: inline-block;
+	padding: 1px 16px;
+	border:1px solid #f0f0f0;
+	border-width: 1px;
+	margin:1px;
+	cursor: pointer;
+	color: #aaa;
+}
+.ctgry-toggle li.active{
+	color: #49e;
+}
+.ctgry-toggle li:hover{
+	color: 000;
+}
 
+.inbox-head-ctnr{
+	border: 1px solid #eee;
+	background: #f9f9f9;
+	border-width: 0 0 1px 0;
+}
+.inbox-head .glyphicon{
+	font-size: 10px;
+	padding-right: 5px;
+}
+.inbox-head{
+	font-weight: bold;
+	color: #666;
+	padding: 7px 12px 3px 12px;
+	display: inline-block;
+	cursor: pointer;
+}
 
-.mailLst .mail-id{font-size: 13px;color: #4af;}
-.mailLst .mail-id > li{border-bottom: 1px dotted #ddd;padding:3px 10px 3px 10px;}
-.mailLst .glyphicon{font-size: 11px; color: #999;margin-right: 5px;}
-.mailLst{
+.contact-info .mail-id{color: #4af;padding-left: 10px;}
+.contact-info .mail-id > li{border-bottom: 1px dotted #ddd;padding:3px 10px 3px 10px;}
+.contact-info .glyphicon{font-size: 11px; color: #999;margin-right: 5px;}
+.contact-info{
 	width: 100%;
 }
-.mailLst table{
+.contact-info table{
 	width: 100%;
 }
 
-.mailLst{
+.contact-info{
 	background: #fff;
 	height: 550px;
 	overflow: scroll;
 	overflow-x:hidden; 
 	border: 1px solid #f9f9f9;
 	border-top:none; 
-	padding: 10px 0 0 0;
 	display: inline-block;
 }
-.mailLst .date {
+.contact-info .date {
 }
-.mailLst .date > a{
+.contact-info .date > a{
 	color: #aaa;
 	width: 75px;
 	display: inline-block;
 }
 
-.mailLst .folder{
+.contact-info .folder{
 	text-transform: capitalize;
 }
 
-.mailLst tr td::first{
+.contact-info tr td::first{
 	padding-left: 10px;
 }
 
@@ -579,53 +595,63 @@ color: #777;
 	text-overflow: ellipsis;
 }
 
-.mailLst .from{
+.contact-info .from{
 display: inline-block;
 width: 120px;
 }
 
-.mailLst .remark{
+.contact-info .remark{
 	display: inline-block;
 	width: 300px;
 	height: 14px;
 }
-.mailLst .subject{
-	color: #808080;
+.contact-info .subject{
+	color: #959595;
 	display: inline-block;
 	width: 360px;
 
 	vertical-align: bottom;
 }
 
-.mailLst .glyphicon-chevron-left{
+.contact-info .glyphicon-chevron-left{
 	color: #8cf;
 }
 
-.mailLst .glyphicon-chevron-right{
+.contact-info .glyphicon-chevron-right{
 	color: #ddd;
 }
 
-.mailLst .head{
+.contact-info .head{
 	color: #444;
 	font-weight: bold;
 	padding: 0px 5px 1px 0;
 	font-size: 12px;
 }
-.mailLst tr{
-	border-bottom: 1px dotted #ddd;
+.contact-info tr{
+	border-bottom: 1px solid #ddd;
 }
-.mailLst td{
-	padding: 3px 5px 2px 0;
+.contact-info td{
+	padding: 5px 5px 5px 0;
 }
 
-.mailLst .first{
+.contact-info .first{
 	width: 50px;
 	padding-left: 10px;
 	text-transform: capitalize;
 }
 
-.mailLst .second{
+.contact-info .second{
 	width: 120px;
+}
+
+.comm-lst tr{
+	border-bottom: 1px dotted #eee;
+	background: #fff;
+	font-size: 11px;
+}
+
+.comm-lst td{
+	padding: 2px 5px 2px 0;
 }
 
 h4{
@@ -636,54 +662,47 @@ h5{
 	font-size: 13px;
 	font-weight: bold;
 }
-#mailTab {
-	display: inline-block;
-}
-#mailTab ul{
-	list-style-type: none;
-}
-#mailTab a:hover{
-	text-decoration: none;
-}
-#mailTab li{
-	cursor: pointer;
-	color: #bbb;
-	border-bottom: none;
-	display: inline-block;
+
+.sele-head{
 	padding: 6px 24px 5px 10px;
-	background: #f9f9f9;
+	background: #777;
+	border:1px solid #eee;
+	border-width: 0;
+	color: #ccc;
+	margin-left: -1px;
+	border-left: 1px solid #666;
 }
-
-#mailTab li.sele{
-background: #fff;
-color: #19f;
-font-weight: bold;
-border:1px solid #eee;
-border-width: 0 1px;
+.sele-head .name{
+	color: #fff;
+	font-weight: bold;
 }
-
+.sele-head .glyphicon{
+	padding-left: 10px;
+}
 .hide{display: none;}
 
 .ctgry-lst {
+	background: #777;
 }
 
 .ctgry-lst li:hover{
-	color: #000;
+	color: #19f;
 }
 
 .ctgry-lst li{
-display: inline-block;
-width: 81px;
-padding: 7px 4px 3px 4px;
-text-transform: capitalize;
-color: #bbb;
-cursor: pointer;
-border: 1px solid #bbb;
-border-width: 0 1px 1px 0;
-margin: 0;
-text-align: center;
-background: #f9f9f9;
-border-color: #e9e9ea #f2f2f2;
+	display: inline-block;
+	width: 81px;
+	padding: 7px 4px 4px 4px;
+	text-transform: capitalize;
+	color: #bbb;
+	cursor: pointer;
+	border: 1px solid #bbb;
+    border-width: 0px 1px 1px 1px;
+    margin: 0px;
+    text-align: center;
+    border-color: #888;
+    border-bottom: none;
+    border-left-color: #555;
 }
 .ctgry-lst li.sele{
 color: #19f;
@@ -716,17 +735,23 @@ border-bottom-color:#fff;
 	background: #f9f9f9;
 	padding: 4px 11px;
 }
-
+.ib-busy-msg{
+display: inline-block;
+float: right;
+padding: 5px 17px;
+color: #999;
+font-style: italic;
+}
 .ctrl-lst li:hover{
 	background: #eee;
 }
 .ctrl-lst li{
-padding: 5px 24px 5px 24px;
-border-right: 1px solid rgba(255,255,255,1);
+padding: 5px 30px;
+border-right: 1px solid #ddd;
 display: inline-block;
 cursor: pointer;
-color: #777;
-margin: 0 0px 0 0;
+color: #444;
+margin: 0px;
 background: #eee;
 }
 .ctrl-lst{
@@ -749,6 +774,7 @@ background: #eee;
 }
 .ln-dupe td{
 	padding: 5px 0px 5px 10px;
+	line-height: 18px;
 }
 .ln-dupe img{
 	width: 50px;
@@ -766,17 +792,23 @@ background: #eee;
 .cn-dupe{
 	color: #999;
 }
+.cn-dupe td{
+	padding: 3px 5px 1px 0px;
+	vertical-align: top;
+}
 .cn-dupe tr{
-	background: #f9f9f9;
-	border-bottom: 1px solid #e0e0e0;
+	background: #fafafa;
+	border-bottom: 1px solid #e9e9e9;
 }
 
 .cn-dupe .glyphicon{
+	margin-left: 7px;
 }
 
 #banner{
 	background:#444;
 	line-height: 22px;
+	border-bottom: 1px solid #222;
 }
 
 #banner input{
@@ -804,6 +836,10 @@ border-left: 1px solid #222;
 	vertical-align: top;
 	height: 20px;
 padding: 0 12px 0 24px;
+}
+
+#banner a{
+	color: #9df;
 }
 
 #logo{
@@ -852,6 +888,9 @@ min-width: 50px;
 margin: 2px 2px 0 0;
 font-size: 11px;}
 
+.ctgry-edit-lst li:hover{
+	color: #19f;
+}
 #zoneEdit input{
 border-radius: 0;
 width: 96px;
@@ -1008,3 +1047,20 @@ padding: 2px 5px;
   .ghostCircle, .activeDrag .ghostCircle{
        display: none;
   }
+
+
+  .slide-up {
+    transition: .5s linear all;
+    height: 300px;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+.slide-up.ng-hide {
+    transition: .5s linear all;
+    height:0;
+}
+
+.ng-hide-add, .ng-hide-remove {
+    /* ensure visibility during the transition */
+    display: block !important; /* yes, important */
+}

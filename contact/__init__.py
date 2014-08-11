@@ -1,9 +1,13 @@
 
 class ContactStatus:
-    follow = 0
-    not_follow = 1
-    merged = 2
-    removed = 3
+    def __init__(self):
+        pass
+
+    important = 5
+    follow = 10
+    not_follow = 20
+    merged = 30
+    removed = 40
 
     @classmethod
     def get_active(cls, user):
@@ -11,6 +15,9 @@ class ContactStatus:
 
 
 class MailDirection:
+    def __init__(self):
+        pass
+
     TO = 1
     FROM = 2
     CC = 3
