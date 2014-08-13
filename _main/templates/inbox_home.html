@@ -4,180 +4,226 @@
 	<meta charset="UTF-8">
 	<title>Inbox | {{user.email}}</title>
 	<link rel="stylesheet" href='/static/css/style.css' type="text/css"/>
+	<link rel="stylesheet" href='/static/css/ng-quick-date.css' type="text/css"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src='/static/angular.min.js'></script>
 	<script src='/static/angular-animate.min.js'></script>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src='/static/angular-charts.min.js'></script>
+	<script src='/static/ng-quick-date.min.js'></script>	
+
 </head>
 <body ng-app="app">
-	{% verbatim %}
-
-	<div>
-		<div ng-click="treeView=!treeView" id="logo"><span style="color:#777;" class="glyphicon glyphicon-tree-deciduous"></span></div>
-		<div id="banner" ng-controller="userCtrl">
-			<ul style="width:100%">
-				<li>
-				<span class="product">Contact Tree<span></li><li><span class="glyphicon glyphicon-user"></span>{{user.name}}</li><li><span class="glyphicon glyphicon-envelope"></span>{{user.email}}</li><li>
-					<span class="glyphicon glyphicon-phone"></span><span ng-hide="mobileEdit">{{user.phone}} <span class="glyphicon glyphicon-edit btn-icon" ng-click="mobileEdit=true"></span></span> 
-					<span ng-show="mobileEdit"><input type="text" ng-model="user.phone"><span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateMobile()"></span></span>
-				</li><li><a href="/logout">Logout</a></li>
-				<!-- <li ng-show="user.ln_count==0"><a href="/lkdn"><span class="glyphicon glyphicon-download-alt"></span> Import from Linkdin</a></li> -->
+{% verbatim %}
+<div ng-click="treeView=!treeView" id="logo"><span style="color:#777;" class="glyphicon glyphicon-tree-deciduous"></span></div>
+<div id="banner" ng-controller="userCtrl">
+	<ul style="width:100%">
+		<li><span class="product">Contact Tree<span></li><li>
+		<span class="glyphicon glyphicon-user"></span>{{user.name}}</li><li>
+		<span class="glyphicon glyphicon-envelope"></span>{{user.email}}</li><li>
+		<span class="glyphicon glyphicon-phone"></span><span ng-hide="mobileEdit">{{user.phone}}<span class="glyphicon glyphicon-edit btn-icon" ng-click="mobileEdit=true"></span></span> 
+		<span ng-show="mobileEdit"><input type="text" ng-model="user.phone"><span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateMobile()"></span><span class="glyphicon glyphicon-remove" ng-click="mobileEdit=false"></span></span></li><li>
+		<!-- <li ng-show="user.ln_count==0"> -->
+		<!-- <a href="/lkdn"><span class="glyphicon glyphicon-download-alt"></span> Import from Linkdin</a></li><li> -->
+		<a href="/logout">Logout</a></li>
+	</ul>
+</div>
+<div id="cTree" ng-show="treeView">
+</div>
+<div ng-hide="treeView">
+	<busy show='showBusy'>
+		<div style="text-align:center;">{{busyText}}</div>
+	</busy>
+	<div id="leftMain" ng-controller="zoneCtrl">
+		<ul class="ctgry-lst">
+			<li ng-click="toggleSettings()" ng-class="{sele:seleCtgry == null}"><span class="glyphicon glyphicon-cog"></span></li><li class="repeated-item" ng-repeat="c in ctgrys" ng-click="selectCtrgy(c)" ng-class="{sele:seleCtgry == c}">{{c}}</li><li ng-class="{sele:seleCtgry == '*'}" ng-click="selectCtrgy('*')"><span class="glyphicon glyphicon-star"></span></li>
+		</ul>
+		<div id="leftInner">
+		<div ng-show="seleCtgry==null" style="border-bottom:1px solid #eee">
+			<ul class="ctgry-toggle">
+				<li ng-repeat="c in masterCtgrys" ng-class="{active:ctgrys.contains(c)}" ng-click="toggleCtgry(c)">{{c}}</li>
 			</ul>
+			<table id="zoneEdit">
+				<tr>
+					<td class="text">Safe</td>
+					<td>
+						<div class="input-group">
+							<input type="number" ng-model="zone1">
+						  	<span class="input-group-addon">days</span>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="text">Danger</td>
+					<td>
+						<div class="input-group">
+							<input type="number" ng-model="zone2">
+						  	<span class="input-group-addon">days</span>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td colspan="2">
+						<a class="flat-btn ft-r" style="margin:0 0 4px 0;" ng-click="updateSettings()"> <span class="glyphicon glyphicon-floppy-disk" ></span> Save</a>
+					</td>
+					<td></td>
+				</tr>
+			</table>
 		</div>
-		<div id="cTree" ng-show="treeView">
-		</div>
-		<div ng-hide="treeView">
-			<busy show='showBusy'>
-				<div style="text-align:center;">{{busyText}}</div>
-			</busy>
-			<div style="display:inline-block;width:50%;float:left" ng-controller="zoneCtrl">
-				<ul class="ctgry-lst">
-					<li ng-click="showSettings=!showSettings" style="color: #d83;text-align: right;border-width: 0px 1px 1px 0;" class="repeated-item"><span class="glyphicon glyphicon-cog"></span></li><li class="repeated-item" ng-repeat="c in ctgrys" ng-click="selectCtrgy(c)" ng-class="{sele:seleCtgry == c}">{{c}}</li><li ng-class="{sele:seleCtgry == '*'}" ng-click="selectCtrgy('*')"><span class="glyphicon glyphicon-star"></span></li>
-				</ul>
-				<div ng-show="showSettings">
-					<ul class="ctgry-toggle">
-						<li ng-repeat="c in masterCtgrys" ng-class="{active:ctgrys.contains(c)}" ng-click="toggleCtgry(c)">{{c}}</li>
+		<table id="zone" ng-hide="seleCtgry==null">
+			<tr ng-repeat="z in zones">
+				<td class="head" ng-click="z.show=!z.show" ng-class="{active:z.show}">{{z.name}}</td>
+				<td ng-class="z.name">
+					<ul class="cnt-lst" ng-show="z.show" class="show-hide">
+						<li ng-repeat="h in z.contacts" class="repeated-item">
+							<span class="glyphicon glyphicon-star" ng-class="{star:h.status==5}" ng-click="updateFollow(h, h.status==5?10:5)"></span>
+							<div class="name" title="{{h.email}} | {{h.mobile}}" ng-click="setContact(h)">{{h.name}}</div>
+							<span class="delta">{{h.delta}}</span>	
+							<a class="remove" title="unfollow" ng-click="updateFollow(h,z.nextStatus)">x</a>
+						</li>
 					</ul>
+				</td>
+			</tr>
+		</table>
 
-					<table id="zoneEdit">
-						<tr>
-							<td class="text">Safe</td>
-							<td>
-								<div class="input-group">
-									<input type="number" ng-model="zone1">
-								  	<span class="input-group-addon">days</span>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td class="text">Danger</td>
-							<td>
-								<div class="input-group">
-									<input type="number" ng-model="zone2">
-								  	<span class="input-group-addon">days</span>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td colspan="2">
-								<a class="flat-btn ft-r" style="margin:0 0 4px 0;" ng-click="updateSettings()"> <span class="glyphicon glyphicon-floppy-disk" ></span> Save</a>
-							</td>
-							<td></td>
-						</tr>
-					</table>
+		<div ng-controller="inboxCtrl">
+			<div class="inbox-head-ctnr">
+				<div class="inbox-head" ng-click="showInbox=!showInbox">
+					<span class="glyphicon glyphicon-chevron-down" ng-show="showInbox"></span>
+					<span class="glyphicon glyphicon-chevron-right" ng-hide="showInbox"></span>
+					Inbox
 				</div>
-<!-- 				<table>
-					<tr ng-repeat="c in contacts">
-						<td>{{c.name}}</td>
-						<td>{{c.delta}}</td>
-						<td>{{c.zone}}</td>
-					</tr>
-				</table> -->
-				<table id="zone">
-					<tr ng-repeat="z in zones">
-						<td class="head" ng-click="z.show=!z.show" ng-class="{active:z.show}">{{z.name}}</td>
-						<td>
-							<ul class="cnt-lst" ng-show="z.show" class="show-hide">
-								<li ng-repeat="h in z.contacts" class="repeated-item">
-									<span class="glyphicon glyphicon-star" ng-class="{star:h.status==5}" ng-click="updateFollow(h, h.status==5?10:5)"></span>
-									<div class="name" title="{{h.email}} | {{h.mobile}}" ng-click="setContact(h)">{{h.name}}</div>
-									<span class="delta">{{h.delta}}</span>	
-									<a class="remove" title="unfollow" ng-click="updateFollow(h,z.nextStatus)">x</a>
-								</li>
-							</ul>
-						</td>
+				<div class="ib-busy-msg" ng-class="{hide:busyMsg==null}">{{busyMsg}}</div>
+				<ul class="ctrl-lst" ng-class="{hide:busyMsg!=null}">
+					<li ng-click="refreshInbox()" title="Refresh Inbox"><span class="glyphicon glyphicon-refresh"></span></li><li ng-click="importInbox()" title="Import Old Mails"><span class="glyphicon glyphicon-save"></span></li>
+				</ul>
+			</div>
+			<div style="width:100%;" class="comm-lst" ng-show="showInbox">
+				<table>
+					<tr class="repeated-item" ng-repeat="m in mails">
+						<td class="first dim">{{m.folder}}</td>
+						<td class="from trim"><a target="blank" href="{{m.url}}">{{m.name}}</a></td>
+						<td><a class="subject trim" target="blank" href="{{m.url}}"> {{m.subject}} </a></td>
+						<td class="date"><a target="blank" href="{{m.url}}">{{m.date | date_mdy}}</a></td>
 					</tr>
 				</table>
-
-				<div ng-controller="inboxCtrl">
-					<div class="inbox-head-ctnr">
-						<div class="inbox-head" ng-click="showInbox=!showInbox">
-							<span class="glyphicon glyphicon-chevron-down" ng-show="showInbox"></span>
-							<span class="glyphicon glyphicon-chevron-right" ng-hide="showInbox"></span>
-							Inbox
-						</div>
-						<div class="ib-busy-msg" ng-class="{hide:busyMsg==null}">{{busyMsg}}</div>
-						<ul class="ctrl-lst" ng-class="{hide:busyMsg!=null}">
-							<li ng-click="refreshInbox()" title="Refresh Inbox"><span class="glyphicon glyphicon-refresh"></span></li><li ng-click="importInbox()" title="Import Old Mails"><span class="glyphicon glyphicon-save"></span></li>
+			</div>		
+		</div>
+		<div class="inbox-head-ctnr">
+			<div class="inbox-head" ng-click="showRem=!showRem">
+				<span class="glyphicon glyphicon-chevron-down" ng-show="showRem"></span>
+				<span class="glyphicon glyphicon-chevron-right" ng-hide="showRem"></span>
+				Reminders
+			</div>
+		</div>
+		<div style="width:100%;" class="comm-lst" ng-show="showRem">
+			<table>
+				<tr class="repeated-item" ng-repeat="r in allReminders | orderBy:'date'">
+					<td class="first dim">{{r.date | date_mdy}}</td>
+					<td class="trim" style="width:120px;">{{r.name}}</td>
+					<td>{{r.remark}}</td>
+					<td ng-click="delReminder(r)"><span class="glyphicon glyphicon-remove btn-icon"></span></td>
+				</tr>
+			</table>
+		</div>
+		</div>	
+	</div>
+	<div style="display:inline-block;width:50%;" ng-controller="contactCtrl">
+		<ul class="sele-head">
+			<li class="name">{{contact.name}}</li><li>
+			<span class="glyphicon glyphicon-envelope"></span> {{contact.email}} </li><li>
+			<span class="glyphicon glyphicon-phone"></span> {{contact.mobile}}</li>
+		</ul>	
+		<div style="width:100%;" class="contact-info">
+			<table class="mail-id">
+				<tr>
+					<td class="first"><span class="glyphicon glyphicon-pencil"></span></td>
+					<td>
+						<span ng-hide="noteEdit">
+							<span class="glyphicon glyphicon-edit btn-icon" ng-click="noteEdit=true"></span>{{contact.note}}
+						</span> 
+						<span ng-show="noteEdit">
+							<textarea ng-model="contact.note"></textarea>
+							<span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateNote()"></span>
+							<span class="glyphicon glyphicon-remove btn-icon" ng-click="noteEdit=false"></span>
+						</span>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr ng-repeat="r in reminders | orderBy:'date'" class="repeated-item">
+					<td class="first"><span class="glyphicon glyphicon-time"></span></td>
+					<td class="r-date">{{r.date | date_mdy }}</td>
+					<td>{{r.remark}}</td>
+					<td ng-click="delReminder(r)"><span class="glyphicon glyphicon-remove btn-icon"></span></td>
+				</tr>
+				<tr class="add-rem">
+					<td class="first"><span class="glyphicon glyphicon-time"></span></td>
+					<td class="r-date"><quick-datepicker ng-model='reminder.date' disable-timepicker="true"></quick-datepicker></td>
+					<td>
+						<input type="text" ng-model='reminder.remark' class="rem-text" placeholder="Type reminder remark">
+					</td>
+					<td><span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="addReminder()"></span></td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td class="first"><span class="glyphicon glyphicon-info-sign"></span></td>
+					<td>
+						<span class="glyphicon glyphicon-edit btn-icon" ng-click="ctgryEdit=true" ng-hide="ctgryEdit"></span>{{contact.category}}
+					</td>
+				</tr>
+				<tr ng-show="ctgryEdit">
+					<td class="first"><span class="glyphicon glyphicon-th-list"></span></td>
+					<td>
+						<ul class="ctgry-edit-lst">
+							<li class="repeated-item" ng-repeat="c in ctgrys" ng-click="updateCtrgy(c)">{{c}}</li>
+							<li style="padding:0"><input placeholder="new category" type="text" ng-model="newCtgry"> <span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateCtrgy(newCtgry)"></span></li>
+							<li ng-click="ctgryEdit=false"><span class="glyphicon glyphicon-remove"></span></li>
 						</ul>
-					</div>
-					<div style="width:100%;" class="contact-info comm-lst slide-up" ng-show="showInbox">
-						<table>
-							<tr class="repeated-item" ng-repeat="m in mails">
-								<td class="first dim">{{m.folder}}</td>
-								<td class="from trim"><a target="blank" href="{{m.url}}">{{m.name}}</a></td>
-								<td><a class="subject trim" target="blank" href="{{m.url}}"> {{m.subject}} </a></td>
-								<td class="date"><a target="blank" href="{{m.url}}">{{m.date | date_mdy}}</a></td>
-							</tr>
-						</table>
-					</div>		
-				</div>
+					</td>
+				</tr>
+
+			</table>
+			<table class="ln-dupe">
+				<tr class="repeated-item" ng-repeat="l in lnDupes">
+					<td class="img"><img ng-src="{{l.image_url}}"></td>
+					<td><a href="{{l.profile_url}}" class="name" target="_blank">{{l.name}}</a><div class="dim">{{l.headline}}</div></td>
+				</tr>
+			</table>
+			<table class="cn-dupe">	
+				<tr>
+					<td class="first">D<span class="glyphicon glyphicon-user"></td>
+					<td colspan="4"><input class="search-inp" placeholder="Search duplicate by Name" ng-model="dupeName"/></td>
+				</tr>
+				<tr class="repeated-item" ng-repeat="c in duplicates" ng-show="dupeName">
+					<td class="first dim">D<span class="glyphicon glyphicon-user"></span></td>
+					<td class="from second trim">{{c.name}}</td>
+					<td class="subject trim">{{c.email}} | {{c.mobile}}</td>
+					<td>
+						<span ng-hide="c.isMerged" ng-click="merge(c)" class="f-16 glyphicon glyphicon-transfer btn-icon"></span>
+						<span ng-show="c.isMerged" class="f-16 success glyphicon glyphicon-saved"></span>
+					</td>
+				</tr>
+			</table>
+			<div ng-controller="statCtrl" style="padding:10px" ng-hide="contact==null">
+				<div ac-chart="chartType" ac-data="data" ac-config="config"></div>
 			</div>
-			<div style="display:inline-block;width:50%;border-left:1px solid #eee;" ng-controller="contactCtrl">
-				<div class="sele-head">
-					<span class="name">{{contact.name}}</span>
-					<span class="glyphicon glyphicon-envelope"></span> {{contact.email}} 
-					<span class="glyphicon glyphicon-phone"></span> {{contact.mobile}}
-				</div>	
-				<div style="width:100%;"  class="contact-info">
-					<table class="mail-id">
-						<tr>
-						<td class="first"><span class="glyphicon glyphicon-info-sign"></span></td>
-						<td>
-							{{contact.category}}
-							<span class="glyphicon glyphicon-edit btn-icon" ng-click="ctgryEdit=true" ng-hide="ctgryEdit"></span>
-						</td>
-						<tr ng-show="ctgryEdit">
-							<td class="first"><span class="glyphicon glyphicon-th-list"></span></td>
-							<td>
-								<ul class="ctgry-edit-lst">
-									<li class="repeated-item" ng-repeat="c in ctgrys" ng-click="updateCtrgy(c)">{{c}}</li>
-									<li style="padding:0"><input placeholder="new category" type="text" ng-model="newCtgry"> <span class="glyphicon glyphicon-floppy-disk btn-icon" ng-click="updateCtrgy(newCtgry)"></span></li>
-									<li ng-click="ctgryEdit=false"><span class="glyphicon glyphicon-remove"></span></li>
-								</ul>
-							</td>
-						</tr>
-					</table>
-					<table class="ln-dupe">
-						<tr class="repeated-item" ng-repeat="l in lnDupes">
-							<td class="img"><img ng-src="{{l.image_url}}"></td>
-							<td><a href="{{l.profile_url}}" class="name" target="_blank">{{l.name}}</a><div class="dim">{{l.headline}}</div></td>
-						</tr>
-					</table>
-					<table class="cn-dupe">	
-						<tr>
-							<td class="first">D<span class="glyphicon glyphicon-user"></td>
-							<td colspan="4"><input class="search-inp" placeholder="Search duplicate by Name" ng-model="dupeName"/></td>
-						</tr>
-						<tr class="repeated-item" ng-repeat="c in duplicates">
-							<td class="first dim">D<span class="glyphicon glyphicon-user"></span></td>
-							<td class="from second trim">{{c.name}}</td>
-							<td class="subject trim">{{c.email}} | {{c.mobile}}</td>
-							<td>
-								<span ng-hide="c.isMerged" ng-click="merge(c)" class="f-16 glyphicon glyphicon-transfer btn-icon"></span>
-								<span ng-show="c.isMerged" class="f-16 success glyphicon glyphicon-saved"></span>
-							</td>
-						</tr>
-					</table>
-					<div ng-controller="statCtrl" style="padding:10px" ng-hide="contact==null">
-						<div ac-chart="chartType" ac-data="data" ac-config="config"></div>
-					</div>
-					<table class="comm-lst">
-						<tr class="repeated-item" ng-repeat="m in commItems">
-							<td class="first type"><span class="glyphicon" ng-class="m.tclass"></span> <span class="glyphicon" ng-class="m.dclass"></span></td>
-							<td class="date second"><a target="blank" href="{{m.url}}">{{m.date | date_mdy}}  {{m.date | time}}</a></td>
-							<td><a class="remark trim" target="blank" href="{{m.url}}"> {{m.remark}} </a></td>
-						</tr>
-					</table>
-				</div>
-			</div>
-			<div id="statusMsg">{{statusMsg}}</div>
+			<table class="comm-lst">
+				<tr class="repeated-item" ng-repeat="m in commItems">
+					<td class="first type"><span class="glyphicon" ng-class="m.tclass"></span> <span class="glyphicon" ng-class="m.dclass"></span></td>
+					<td class="date second"><a target="blank" href="{{m.url}}">{{m.date | date_mdy}}  {{m.date | time}}</a></td>
+					<td><a class="remark trim" target="blank" href="{{m.url}}"> {{m.remark}} </a></td>
+				</tr>
+			</table>
 		</div>
 	</div>
-	{% endverbatim %}
-	<script src='/static/_tree.js'></script>
-	<script src='/static/_common.js'></script>
+	<div id="footer">© 2014 Copyright RawData Technologies</div>
+	<!-- <div id="statusMsg">{{statusMsg}}</div> -->
+</div>
+{% endverbatim %}
+<script src='/static/_tree.js'></script>
+<script src='/static/_common.js'></script>
 </body>
 </html>

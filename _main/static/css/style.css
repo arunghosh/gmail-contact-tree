@@ -488,11 +488,29 @@ color: #19f;
 	width: 100%;
 }
 
+
 #zone td{
 	padding: 2px;
 	border: 1px solid #f2f2f2;
 	border-width: 0 0 1px 0; 
 }
+
+#zone .safe{
+	border-left: 2px solid #5c5;
+}
+
+#zone .inter{
+	border-left: 2px solid #d84;
+}
+
+#zone .removed{
+	border-left: 2px solid #999;
+}
+
+#zone .danger{
+	border-left: 2px solid #d33;
+}
+
 #zone tr{
 	vertical-align: top;
 	/*border-bottom: 1px solid #eee; */
@@ -554,28 +572,57 @@ color: #777;
 	cursor: pointer;
 }
 
-.contact-info .mail-id{color: #4af;padding-left: 10px;}
+
+
+.contact-info .mail-id{color: #999;padding-left: 10px;}
 .contact-info .mail-id > li{border-bottom: 1px dotted #ddd;padding:3px 10px 3px 10px;}
-.contact-info .glyphicon{font-size: 11px; color: #999;margin-right: 5px;}
-.contact-info{
-	width: 100%;
-}
-.contact-info table{
+.contact-info .glyphicon{font-size: 10px; color: #999;margin-right: 5px;}
+.comm-lst table, .contact-info table{
 	width: 100%;
 }
 
+.contact-info .r-date, .comm-info .r-date{
+	width: 80px;
+	color: #39e;
+}
+
+.r-date .quickdate-button{
+	border:0;
+	padding-left: 0
+}
+
 .contact-info{
+	width: 100%;
 	background: #fff;
-	height: 550px;
-	overflow: scroll;
+	overflow: auto;
 	overflow-x:hidden; 
 	border: 1px solid #f9f9f9;
 	border-top:none; 
 	display: inline-block;
+	color: #777;
+	height:86vh;
 }
-.contact-info .date {
+
+#leftMain{
+	display: inline-block;
+	width: 50%;
+	float: left;
 }
-.contact-info .date > a{
+
+#footer{
+	text-align: center;
+	padding: 4px 0 2px 0;
+	background: #F9F9F9;
+	color: #999;
+	font-size: 11px;
+}
+#leftInner{
+	height:86vh;
+	overflow: auto;
+	overflow-x:hidden; 
+}
+
+.contact-info .date > a, .comm-lst .date > a{
 	color: #aaa;
 	width: 75px;
 	display: inline-block;
@@ -585,17 +632,13 @@ color: #777;
 	text-transform: capitalize;
 }
 
-.contact-info tr td::first{
-	padding-left: 10px;
-}
-
 .trim{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-.contact-info .from{
+.contact-info .from, .comm-lst .from{
 display: inline-block;
 width: 120px;
 }
@@ -605,7 +648,7 @@ width: 120px;
 	width: 300px;
 	height: 14px;
 }
-.contact-info .subject{
+.contact-info .subject, .comm-lst .subject{
 	color: #959595;
 	display: inline-block;
 	width: 360px;
@@ -628,30 +671,58 @@ width: 120px;
 	font-size: 12px;
 }
 .contact-info tr{
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid #eee;
 }
-.contact-info td{
-	padding: 5px 5px 5px 0;
+.contact-info textarea{
+	height: 50px;
+	overflow: scroll;
+	overflow-x:hidden; 
+}
+.contact-info td, .comm-lst td{
+	padding: 5px 5px 3px 0;
+	vertical-align: top;
 }
 
-.contact-info .first{
+.contact-info .first, .comm-lst .first{
 	width: 50px;
 	padding-left: 10px;
 	text-transform: capitalize;
+	vertical-align: middle;
+}
+
+.comm-lst .first{
+	padding-left: 15px;
+	width: 55px;
 }
 
 .contact-info .second{
 	width: 120px;
 }
 
+
+.contact-info .glyphicon-time{
+	color: #5d9;
+}
+.contact-info .glyphicon-info-sign, .contact-info .glyphicon-th-list{
+	color: #5af;
+}
+.add-rem td{
+	padding-top: 0;
+	padding-bottom: 0;
+}
 .comm-lst tr{
 	border-bottom: 1px dotted #eee;
 	background: #fff;
 	font-size: 11px;
+	color: #888;
 }
-
 .comm-lst td{
 	padding: 2px 5px 2px 0;
+}
+
+.comm-lst tr:hover{
+	background: #f9f9f9;
+	color: #333;
 }
 
 h4{
@@ -664,20 +735,25 @@ h5{
 }
 
 .sele-head{
-	padding: 6px 24px 5px 10px;
 	background: #777;
-	border:1px solid #eee;
-	border-width: 0;
-	color: #ccc;
-	margin-left: -1px;
-	border-left: 1px solid #666;
+}
+.sele-head li{
+	display: inline-block;
+	padding: 7px 14px 4px 14px;
+	color: #bbb;
+	border: 1px solid #bbb;
+    margin: 0px;
+    text-align: left;
+    border-color: #888 #555 #555 #888;
+    border-top: none;
 }
 .sele-head .name{
 	color: #fff;
 	font-weight: bold;
+	background: #6b6b6b;
 }
 .sele-head .glyphicon{
-	padding-left: 10px;
+	padding: 0 5px 0 0px;
 }
 .hide{display: none;}
 
@@ -697,12 +773,9 @@ h5{
 	color: #bbb;
 	cursor: pointer;
 	border: 1px solid #bbb;
-    border-width: 0px 1px 1px 1px;
-    margin: 0px;
     text-align: center;
-    border-color: #888;
-    border-bottom: none;
-    border-left-color: #555;
+    border-color: #888 #555 #555 #888;
+    border-top: none;
 }
 .ctgry-lst li.sele{
 color: #19f;
@@ -828,9 +901,9 @@ background: #eee;
 #banner li{
 display: inline-block;
 color: #bbb;
-border-right: 1px solid #555;
+border-left: 1px solid #555;
 padding: 7px 30px 2px 30px;
-border-left: 1px solid #222;
+border-right: 1px solid #222;
 }
 #banner img{
 	vertical-align: top;
@@ -839,7 +912,7 @@ padding: 0 12px 0 24px;
 }
 
 #banner a{
-	color: #9df;
+	color: #ccc;
 }
 
 #logo{
@@ -853,14 +926,14 @@ padding: 0 12px 0 24px;
 	color: #ccc;
 }
 .btn-icon:hover{
-	color: #444!important;
+	color: #29f!important;
 }
 
 .btn-icon{
-	font-size: 12px;
-	color: #bbb!important;
-	padding: 2px 5px;
-	cursor: pointer;
+font-size: 12px;
+color: #bbb!important;
+padding: 2px 5px 2px 0;
+cursor: pointer;
 }
 #banner .btn-icon{
 	padding: 2px 5px;
@@ -921,10 +994,10 @@ border-color: #eee;
   class
 */
 .repeated-item.ng-enter, .repeated-item.ng-move {
-  -webkit-transition:0.7s linear all;
-  -moz-transition:0.7s linear all;
-  -o-transition:0.7s linear all;
-  transition:0.7s linear all;
+  -webkit-transition:0.5s linear all;
+  -moz-transition:0.5s linear all;
+  -o-transition:0.5s linear all;
+  transition:0.5s linear all;
   opacity:0;
 }
 
@@ -945,10 +1018,10 @@ border-color: #eee;
   that has the .repeated-item class
 */
 .repeated-item.ng-leave {
-  -webkit-animation:0.6s my_animation;
-  -moz-animation:0.6s my_animation;
-  -o-animation:0.6s my_animation;
-  animation:0.6s my_animation;
+  -webkit-animation:0.5s my_animation;
+  -moz-animation:0.5s my_animation;
+  -o-animation:0.5s my_animation;
+  animation:0.5s my_animation;
 }
 
 @keyframes my_animation {
@@ -1051,7 +1124,7 @@ padding: 2px 5px;
 
   .slide-up {
     transition: .5s linear all;
-    height: 300px;
+    max-height: 300px;
     overflow: scroll;
     overflow-x: hidden;
 }
@@ -1063,4 +1136,12 @@ padding: 2px 5px;
 .ng-hide-add, .ng-hide-remove {
     /* ensure visibility during the transition */
     display: block !important; /* yes, important */
+}
+
+.rem-text{
+display: inline-block!important;
+width: 70%!important;
+box-shadow: none!important;
+border-width: 0!important;
+padding-left:0!important; 
 }

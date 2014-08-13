@@ -1,6 +1,12 @@
 from .setting.production import *
 # from .setting.dev import *
 
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'arunghosh@gmail.com'
+# EMAIL_HOST_PASSWORD = 'hjhj#$'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,

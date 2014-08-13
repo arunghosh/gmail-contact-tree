@@ -32,7 +32,7 @@ class ContactZoneSerializer(DuplicateContactSerializer):
 
     class Meta:
         model = UserContact
-        fields = ('name', 'id', 'zone', 'status', 'email', 'category', 'mobile', 'delta')
+        fields = ('name', 'id', 'zone', 'status', 'email', 'category', 'mobile', 'delta', 'note')
 
 
 class MyUserSerializer(serializers.ModelSerializer):

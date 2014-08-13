@@ -34,6 +34,7 @@ class GetUserIdForMobView(JSONResponseMixin, APIView):
         except:
             return self.render_json_response({'status': 'false'})
 
+
 class RecentCallsView(APIView):
 
     def get(self, request):
@@ -42,6 +43,7 @@ class RecentCallsView(APIView):
         calls.sort(key=lambda x: x.date, reverse=True)
         slz = MobileCallSerializer(calls[0:20], many=True)
         return Response(slz.data)
+
 
 class CallListView(APIView):
 

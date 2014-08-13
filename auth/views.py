@@ -6,6 +6,6 @@ def login(request):
     return render(request, "auth_login.html", {})
 
 
-def logout(request):
+def logout_user(request):
     logout(request)
     return render(request, "auth_login.html", {})

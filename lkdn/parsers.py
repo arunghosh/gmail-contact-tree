@@ -8,6 +8,7 @@ class ImportAll:
         self.user = user
 
     def execute(self):
+        print self.response
         for c in self.response['values']:
             ln = LnContact()
             ln.ln_id = c['id']

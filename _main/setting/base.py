@@ -39,6 +39,8 @@ INSTALLED_APPS = (
     'inbox',
     'lkdn',
     'mobile',
+    'reminder',
+    'zone',
 )
 
 

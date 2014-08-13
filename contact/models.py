@@ -12,10 +12,7 @@ class UserContact(BaseModel):
     user = models.ForeignKey(MyUser)
     status = models.SmallIntegerField(default=ContactStatus.follow)
     category = models.CharField(max_length=64, blank=True)
-    # is_deleted = models.BooleanField(default=False)
-    # is_important = models.BooleanField(default=False)
-    # is_follow = models.BooleanField(default=True)
-
+    note = models.CharField(max_length=1024, blank=True)
 
     @property
     def mails(self):

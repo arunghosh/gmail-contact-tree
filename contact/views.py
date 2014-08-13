@@ -3,6 +3,7 @@ from common.views import JSONResponseMixin
 from django.views.generic.base import View
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import json
 from calendar import month_name
 from datetime import datetime
 
@@ -19,11 +20,13 @@ class UpdateFollowStatus(JSONResponseMixin, View):
         c.save()
         return self.render_json_response({'status':True})
 
-class UpdateStarStatus(JSONResponseMixin, View):
 
-    def post(self, request, cid, status):
+class UpdateNote(JSONResponseMixin, View):
+
+    def post(self, request, cid):
         c = UserContact.objects.get(pk=cid)
-        c.status = status
+        data = json.loads(request.read())
+        c.note = data['note']
         c.save()
         return self.render_json_response({})
 

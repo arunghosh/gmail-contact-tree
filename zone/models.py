@@ -1,3 +1,6 @@
 from django.db import models
+from auth.models import MyUser
 
-# Create your models here.
+class RemovedCategory(models.Model):
+    name = models.CharField(max_length=64)
+    user = models.ForeignKey(MyUser)

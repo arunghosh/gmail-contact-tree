@@ -1,63 +1,3 @@
-var DATE_FORMAT = "DD, d M, yy";
-var WEEK_DAYS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
-var Day = function(slots, date){
-    var way = date.getDay();
-    this.slots = slots;
-    this.date = date.toDateString();
-    this.day = date.getDate();
-    this.wday = WEEK_DAYS[way];
-    this.class = (way == 0 || way == 6) ? 'hol' : '';
-    this.details = false;
-};
-
-var Calender = function(){
-    var date = new Date();
-    this.months = ["Jan","Feb","Mar","Apr", "May", "Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    this.month = this.months[date.getMonth()];
-    this.days = [];
-    this.years = [];
-    this.year = date.getFullYear();
-
-    this.getMonthInt = function(){
-        return this.months.indexOf(this.month) + 1;
-    };
-
-    this.getDateMDY = function(day){
-        return this.year + "-" + this.getMonthInt() + "-" + day;
-    };
-
-    this.setSlots = function(dayMap){
-        this.days = [];
-        var date = new Date(this.year, this.getMonthInt(), 0);
-        var max = date.getDate();
-        for(var i = 1; i <= max; i++){
-            var slots = dayMap[i] ? dayMap[i] : []; 
-            date.setDate(i)
-            var day = new Day(slots, date);
-            this.days.push(day);
-        }
-    };
-
-    this.addMonth = function(delta){
-        var month = this.getMonthInt() + delta;
-        if(month > 12){
-            month = month - 12;
-            this.year = year + 1;
-        }
-        if(month < 1){
-            month = month + 12;
-            this.year = year - 1;
-        }
-        this.month = this.months[month - 1];
-    };
-
-    for(var i = this.year - 1; i < this.year + 2; i++){
-        this.years.push(i);
-    }
-};
-
-
-
 var common = new function() {
     this.withCommas = function(x){
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -76,7 +16,7 @@ var common = new function() {
 };
 
 
-var app = angular.module('app', ['ngAnimate', 'angularCharts']);
+var app = angular.module('app', ['ngAnimate', 'angularCharts', 'ngQuickDate']);
 app.config(function($interpolateProvider, $httpProvider) {
     // $interpolateProvider.startSymbol('{[');
     // $interpolateProvider.endSymbol(']}');
@@ -162,6 +102,28 @@ app.factory('api', function($http){
             return $http.post("contact/status/" + cid + "/" + status + "/");
         },
 
+        updateNote: function(contact){
+            return $http.post('contact/note/'+ contact.id + "/", {'note':contact.note});
+        },
+
+        addReminder: function(reminder, contact){
+            var date = reminder.date;
+            var dateStr = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+            return $http.post('reminder/add/', {remark:reminder.remark, cid:contact.id, date:dateStr});
+        },
+
+        delReminder: function(reminder){
+            return $http.post('reminder/delete/', {id:reminder.id});
+        },
+
+        allReminders: function(reminder){
+            return $http.get('reminders/');
+        },
+
+        reminders: function(contact){
+            return $http.get('contact/reminders/' + contact.id );
+        },
+
         updateCtrgy: function(cid, ctgry){
             return $http.post("contact/ctgry/" + cid + "/" + ctgry + "/");
         },
@@ -229,6 +191,14 @@ app.factory('api', function($http){
         userInfo : function(){
             return $http.get('user_info')
         },
+
+        toggleCtgry : function(ctgry, status){
+            return $http.post('rcategory/toggle/', {ctgry:ctgry, status:status});
+        },
+
+        removedCtgrys : function(){
+            return $http.get('rcategorys/');
+        },
     };
 });
 
@@ -252,7 +222,7 @@ Array.prototype.containsById = function(item){
 
 Array.prototype.remove = function(item){
     var index = this.indexOf(item);
-    this.splice(index,1);
+    if(index > -1) this.splice(index,1);
 };
 
 app.controller('userCtrl', function($scope, $rootScope, api){
@@ -268,20 +238,30 @@ app.controller('userCtrl', function($scope, $rootScope, api){
         });
     };
 
-    api.userInfo().success(function(result){
-        $scope.user = result;
-    })
+    function init(){
+        api.userInfo().success(function(result){
+            $scope.user = result;
+        });
 
-    $rootScope.treeView = false;
-    $rootScope.contact = null;
+        api.allReminders().success(function(result){
+            $rootScope.allReminders = result;
+        });
+
+        api.contacts().success(function(result){
+            $rootScope.initalLoad = false;
+            if(!result || result.length == 0) {
+                $rootScope.setBusy("Initial Loading...");
+                $rootScope.initalLoad = true;
+            }
+            $rootScope.allContacts = result;
+        });
+        $rootScope.treeView = false;
+        $rootScope.contact = null;
+    }
 
     $rootScope.setContact = function(contact){
         $rootScope.contact = contact;
     };
-
-    api.contacts().success(function(result){
-        $rootScope.allContacts = result;
-    });
 
     $rootScope.$watch("allContacts", function(newContacts, oldContacts)
     {
@@ -303,11 +283,17 @@ app.controller('userCtrl', function($scope, $rootScope, api){
             });
             ctgrys.sort();
             $rootScope.ctgrys = ctgrys.reduce(function(a,b){
-                if(a.indexOf(b) < 0) a.push(b);
+                if(!a.contains(b)) a.push(b);
                 return a;
             },[]);
             $rootScope.masterCtgrys = $rootScope.ctgrys.slice();
-            $rootScope.onCtgryChange();        
+            api.removedCtgrys().success(function(result){
+                result.reduce(function(a,b){
+                    $rootScope.ctgrys.remove(b.name);
+                    return a;
+                },[]);
+                $rootScope.onCtgryChange();        
+            });
         }
 
         function updateTreeView(){
@@ -341,6 +327,8 @@ app.controller('userCtrl', function($scope, $rootScope, api){
         updateCtrgys();
         updateTreeView();
     }
+
+    init();
 });
 
 var Zone = function(id, name, color, show){
@@ -380,21 +368,38 @@ var ContactMgr = function(){
 };
 
 app.controller('zoneCtrl', function($scope, api, $rootScope){
-    $scope.contacts = [];
-    $scope.manager = new ContactMgr();
-    $scope.seleCtgry = null;
+    function init(){
+        $scope.contacts = [];
+        $scope.manager = new ContactMgr();
+        $scope.seleCtgry = null;
+        api.zones().success(function(result){
+            $scope.zone1 = result.p1;
+            $scope.zone2 = result.p2;
+        });
+    }
 
-    api.zones().success(function(result){
-        $scope.zone1 = result.p1;
-        $scope.zone2 = result.p2;
-    });
+    init();
+
+    $scope.toggleSettings = function(){
+        if($scope.seleCtgry){
+            $scope.prevCtgry = $scope.seleCtgry;
+            $scope.seleCtgry = null;
+        } else{
+            $scope.seleCtgry = $scope.prevCtgry;            
+        }
+    };
 
     $scope.toggleCtgry = function(ctgry){
+        var status = true;
         if($rootScope.ctgrys.contains(ctgry)){
             $rootScope.ctgrys.remove(ctgry);
+            status = false;
         } else{
             $rootScope.ctgrys.push(ctgry);
         }
+        api.toggleCtgry(ctgry, status).success(function(){
+
+        });
         $rootScope.ctgrys.sort();
     };
 
@@ -449,6 +454,7 @@ app.controller('inboxCtrl', function($scope, api, $rootScope){
     $scope.refreshInbox = function(){
         $scope.busyMsg = "Fetching latest mails....";
         api.refreshInbox().success(function(result){
+            if($rootScope.initalLoad) window.location = "/";
             onImport(result);
         }).error(function(){
             if(showBusy){
@@ -498,11 +504,8 @@ app.controller('inboxCtrl', function($scope, api, $rootScope){
 
 
 app.controller('contactCtrl', function($scope, api, $rootScope){
-    // $scope.$emit("abcd");
-    function init()
-    {
-        $scope.showBusy = false;
-    }   
+
+    $scope.reminder = {};
 
     $scope.merge = function(dupeContact){
         var seleContact = $rootScope.contact;
@@ -518,11 +521,35 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         });
     };
 
+    $scope.addReminder = function(){
+        var reminder = $scope.reminder;
+        if(reminder.date && reminder.remark){
+            api.addReminder($scope.reminder, $scope.contact).success(function(result){
+                $scope.reminders.push(result);
+                $rootScope.allReminders.push(result);
+                $scope.reminder = {};
+            });
+        }
+    }
+
+    $rootScope.delReminder = function(r){
+        api.delReminder(r).success(function(result){
+            $scope.reminders.remove(r);
+            $rootScope.allReminders.remove(r);
+        });
+    };
+
     $scope.updateCtrgy = function(ctgry){
         api.updateCtrgy($rootScope.contact.id, ctgry).success(function(){
             $rootScope.contact.category = ctgry;
             $rootScope.ctgryEdit = false;
             $rootScope.onContactUpdate();
+        });
+    };
+
+    $scope.updateNote = function(ctgry){
+        api.updateNote($rootScope.contact).success(function(){
+            $scope.noteEdit = false;
         });
     };
 
@@ -542,6 +569,12 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
         api.lnDuplicates(contact.id).success(function(result){
             $scope.lnDupes = result;
         }); 
+        if($rootScope.allReminders) {
+            $scope.reminders = $rootScope.allReminders.reduce(function(a,b){
+                if(b.cid == contact.id) a.push(b);
+                return a;
+            },[]);
+        }
 
         refreshCommItems();
 
@@ -577,8 +610,6 @@ app.controller('contactCtrl', function($scope, api, $rootScope){
             }
         }
     }
-
-    init();
 });
 
 
