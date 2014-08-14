@@ -3,7 +3,7 @@ from .base import *
 import dj_database_url
 
 
-DEBUG = True
+DEBUG = False
 
 GMAIL_CLIENT_ID = '864339645094-rii2aqr2jm20k63hf6jjt2pr7c6qku31.apps.googleusercontent.com'
 GMAIL_CLIENT_SECRET = 'nT3ebkSkWSUGdob-yfxNdCGC'

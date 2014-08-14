@@ -3,7 +3,7 @@ __author__ = 'lenovo'
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 GMAIL_CLIENT_ID = '864339645094-6u7141gbiprre8u1r122e1tjkghk7ev9.apps.googleusercontent.com'
 GMAIL_CLIENT_SECRET = 'wlX4AGzMC1YIS_aQdptABlJ2'

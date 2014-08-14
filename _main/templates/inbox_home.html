@@ -36,7 +36,9 @@
 	</busy>
 	<div id="leftMain" ng-controller="zoneCtrl">
 		<ul class="ctgry-lst">
-			<li ng-click="toggleSettings()" ng-class="{sele:seleCtgry == null}"><span class="glyphicon glyphicon-cog"></span></li><li class="repeated-item" ng-repeat="c in ctgrys" ng-click="selectCtrgy(c)" ng-class="{sele:seleCtgry == c}">{{c}}</li><li ng-class="{sele:seleCtgry == '*'}" ng-click="selectCtrgy('*')"><span class="glyphicon glyphicon-star"></span></li>
+			<li ng-click="toggleSettings()" ng-class="{sele:seleCtgry == null}"><span class="glyphicon glyphicon-cog"></span></li><li class="zone-search">
+				<input type="text" ng-model="nameSearch" placeholder="Search">
+			</li><li class="repeated-item" ng-repeat="c in ctgrys" ng-click="selectCtrgy(c)" ng-class="{sele:seleCtgry == c}">{{c}}</li><li ng-class="{sele:seleCtgry == '*'}" ng-click="selectCtrgy('*')"><span class="glyphicon glyphicon-star"></span></li>
 		</ul>
 		<div id="leftInner">
 		<div ng-show="seleCtgry==null" style="border-bottom:1px solid #eee">

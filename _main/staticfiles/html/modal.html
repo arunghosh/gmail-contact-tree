@@ -1,0 +1,13 @@
+<div class='ng-modal' ng-show='show'>
+  	<div class="modal-header">
+		<button class='ng-modal-overlay' class="close" ng-click='hideModal()'>&times;</button>
+	</div>
+
+	<div class='ng-modal-dialog' ng-style='dialogStyle'>
+		<div class="modal-header">
+			<h4 class="title">{[title]}</h4>
+			<div class='ng-modal-close' ng-click='hideModal()'>&times;</div>
+		</div>
+		<div class='ng-modal-dialog-content' ng-transclude></div>
+	</div>
+</div>

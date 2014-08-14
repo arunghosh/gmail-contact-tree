@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
-
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib import admin
 from auth.views import login, logout_user
 from contact.views import UpdateMobile, UpdateCtgry, UpdateFollowStatus, CommItemsView, MonthView, UpdateNote
@@ -56,5 +57,9 @@ urlpatterns = patterns('',
     url(r'^setting/zones/$', ZoneTimeView.as_view()),
     url(r'^rcategory/toggle/$', ToggleCategory.as_view()),
     url(r'^rcategorys/$', RemovedCategories.as_view()),
+    ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-)
+# static files (images, css, javascript, etc.)
+# urlpatterns += patterns('',
+#                         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+#                             'document_root': settings.STATIC_ROOT}))

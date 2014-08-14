@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = (
@@ -75,7 +75,12 @@ TEMPLATE_DIRS = (
 
 STATIC_URL = '/static/'
 
+ADMINS = (('Arun', 'arunghosh@gmail.com'), ('ArunRDT', 'arun@rawdatatech.com'),)
+
 # PRJ_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

@@ -144,7 +144,7 @@ class MailImport:
         if None != self.mail_resp.get('labelIds'):
             labels = self.mail_resp['labelIds']
             self.mail.folder = labels[0].lower()
-            self.mail.category = labels[1].split("_")[-1].lower() if len(labels) > 1 else "personal"
+            self.mail.category = labels[1].split("_")[-1].lower() if len(labels) > 1 and not labels[1].isdigit() else "personal"
 
     def __import_from_header(self):
         for head in self.mail_resp['payload']['headers']:
