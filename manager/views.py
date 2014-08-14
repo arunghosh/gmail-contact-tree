@@ -17,7 +17,6 @@ from django.core.mail import send_mail
 
 @login_required(login_url='/login')
 def home(request):
-    a = 10/0
     # send_mail('Subject here', 'Here is the message.', 'arunghosh@gmail.com',['arunghosh@gmail.com'], fail_silently=False)
     return render(request, 'inbox_home.html')
 
