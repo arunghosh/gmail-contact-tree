@@ -1,0 +1,4 @@
+venv
+_main/staticfiles
+*.pyc
+*~
