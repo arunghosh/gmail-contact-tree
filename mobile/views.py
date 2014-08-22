@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic.base import View
 from auth.models import MyUser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from django.db import transaction
 from contact.models import UserContact
 
 from .serializer import MobileCallSerializer
+
 
 class UpdateCallsView(JSONResponseMixin, APIView):
 
@@ -31,6 +33,16 @@ class GetUserIdForMobView(JSONResponseMixin, APIView):
         try:
             user = MyUser.objects.get(phone=phone)
             return self.render_json_response({'status': 'true', 'id': user.id})
+        except:
+            return self.render_json_response({'status': 'false'})
+
+
+class GetLastUpdated(JSONResponseMixin, View):
+
+    def get(self, request, phone):
+        try:
+            user = MyUser.objects.get(phone=phone)
+            return self.render_json_response({'status': 'true', 'date': user.mobile_updated_on})
         except:
             return self.render_json_response({'status': 'false'})
 

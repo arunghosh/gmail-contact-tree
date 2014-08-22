@@ -17,7 +17,7 @@ class ZoneTimeView(JSONResponseMixin, View):
 
     def post(self, request):
         user = request.user
-        data = json.loads(request.read())
+        data = json.loads(request.body)
         user.delta_safe = data['p1']
         user.delta_danger = data['p2']
         user.save()
@@ -30,7 +30,7 @@ class ToggleCategory(JSONResponseMixin, View):
         user = request.user
         data = json.loads(request.read())
         ctgry = data['ctgry']
-        ctgrys = [rc for rc in user.removedcategory_set.all() if rc.name == ctgry]
+        ctgrys = [rc for rc in user.removedcategories.all() if rc.name == ctgry]
         if len(ctgrys) == 0:
             rc = RemovedCategory()
             rc.name = ctgry
@@ -45,7 +45,7 @@ class RemovedCategories(APIView):
 
     def get(self, request):
         user = request.user
-        ctgrys = user.removedcategory_set.all()
+        ctgrys = user.removedcategories.all()
         slz = RemovedCtgrySerializer(ctgrys)
         return Response(slz.data)
 

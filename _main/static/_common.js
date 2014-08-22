@@ -79,7 +79,8 @@ app.directive('busy', function() {
             };
         },
         templateUrl: "/static/html/busy.html"
-    };
+    }; 
+    
 });
 
 app.filter("date_mdy", function() {

@@ -7,7 +7,7 @@ from contact.views import UpdateMobile, UpdateCtgry, UpdateFollowStatus, CommIte
 from gmail.views import login as gmail_login, callback, RefreshInboxView, ImportInboxView
 from inbox.views import  MailListView, RecentMailsView
 from manager.views import ContactsWithZoneView, home, UserInfo, DuplicateContacts, MergeContacts
-from mobile.views import GetUserIdForMobView, UpdateCallsView, RecentCallsView, CallListView
+from mobile.views import GetUserIdForMobView, UpdateCallsView, RecentCallsView, CallListView, GetLastUpdated
 from lkdn.views import ln_callback, ln_home, DuplicateLnContacts
 from zone.views import ZoneTimeView, RemovedCategories, ToggleCategory
 from reminder.views import AddReminder, Reminders, DeleteReminder, AllReminders
@@ -53,6 +53,7 @@ urlpatterns = patterns('',
     url(r'^mobile/update/$', UpdateCallsView .as_view()),
     url(r'^mobile/recent/$', RecentCallsView.as_view()),
     url(r'^mobile/calls/(?P<cid>[0-9]*)/$', CallListView.as_view()),
+    url(r'^mobile/last_update/$', GetLastUpdated.as_view()),
 
     url(r'^setting/zones/$', ZoneTimeView.as_view()),
     url(r'^rcategory/toggle/$', ToggleCategory.as_view()),

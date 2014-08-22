@@ -3,4 +3,4 @@ from auth.models import MyUser
 
 class RemovedCategory(models.Model):
     name = models.CharField(max_length=64)
-    user = models.ForeignKey(MyUser)
+    user = models.ForeignKey(MyUser, related_name="removedcategories")

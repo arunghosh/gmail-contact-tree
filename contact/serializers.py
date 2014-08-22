@@ -10,6 +10,7 @@ class CommItemSerializer(serializers.Serializer):
     direction = serializers.IntegerField()
     mail_id = serializers.CharField()
 
+
 class CommStaterializer(serializers.Serializer):
     month = serializers.CharField()
     mail_count = serializers.IntegerField()

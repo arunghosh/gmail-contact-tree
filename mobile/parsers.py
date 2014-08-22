@@ -4,13 +4,15 @@ from contact.models import UserContact
 from datetime import datetime
 from auth.models import MyUser
 
+
 class ImportMobile:
 
     def __init__(self, request):
-        info = json.loads(request.read())
+        info = json.loads(request.body)
         print info
         self.call_list = info['data']
         self.user = MyUser.objects.get(phone=info['number'])
+        self.user.update(mobile_updated_on=info['date'])
         self.__import_contacts()
 
     # def __update_last_contacted
@@ -43,7 +45,6 @@ class ImportMobile:
             call.is_call = c['type'] == 'call'
             call.date = datetime.strptime(c['datetime'], "%b %d, %Y %X %p")
             call.save()
-        pass
 
 
 
