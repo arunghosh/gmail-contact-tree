@@ -53,7 +53,7 @@ urlpatterns = patterns('',
     url(r'^mobile/update/$', UpdateCallsView .as_view()),
     url(r'^mobile/recent/$', RecentCallsView.as_view()),
     url(r'^mobile/calls/(?P<cid>[0-9]*)/$', CallListView.as_view()),
-    url(r'^mobile/last_update/$', GetLastUpdated.as_view()),
+    url(r'^mobile/last_update/(?P<phone>[0-9]*)/$', GetLastUpdated.as_view()),
 
     url(r'^setting/zones/$', ZoneTimeView.as_view()),
     url(r'^rcategory/toggle/$', ToggleCategory.as_view()),
