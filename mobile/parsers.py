@@ -12,7 +12,8 @@ class ImportMobile:
         print info
         self.call_list = info['data']
         self.user = MyUser.objects.get(phone=info['number'])
-        self.user.update(mobile_updated_on=info['date'])
+        self.user.mobile_updated_on = info['date']
+        self.user.update()
         self.__import_contacts()
 
     # def __update_last_contacted
