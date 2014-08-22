@@ -8,12 +8,12 @@ from auth.models import MyUser
 class ImportMobile:
 
     def __init__(self, request):
-        info = json.loads(request.body)
+        info = json.loads(request.read())
         print info
         self.call_list = info['data']
         self.user = MyUser.objects.get(phone=info['number'])
         self.user.mobile_updated_on = info['date']
-        self.user.update()
+        self.user.save()
         self.__import_contacts()
 
     # def __update_last_contacted
@@ -39,12 +39,12 @@ class ImportMobile:
         return user_contact
 
     def __import_contacts(self):
-        for c in [json.loads(c) for c in self.call_list]:
+        for c in self.call_list:
             call = MobileCall()
             call.mobile_contact = self.__get_contact(c)
             call.duration = c['duration']
             call.is_call = c['type'] == 'call'
-            call.date = datetime.strptime(c['datetime'], "%b %d, %Y %X %p")
+            call.date = datetime.strptime(c['datetime'], "%d-%m-%Y %X")
             call.save()
 
 
