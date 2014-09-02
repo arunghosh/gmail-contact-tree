@@ -109,7 +109,8 @@ app.factory('api', function($http){
 
         addReminder: function(reminder, contact){
             var date = reminder.date;
-            var dateStr = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+			var month = date.getMonth() + 1;
+            var dateStr = date.getFullYear() + "-" + month + "-" + date.getDate();
             return $http.post('reminder/add/', {remark:reminder.remark, cid:contact.id, date:dateStr});
         },
 

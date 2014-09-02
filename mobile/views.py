@@ -18,13 +18,13 @@ class UpdateCallsView(JSONResponseMixin, APIView):
     @csrf_exempt
     @transaction.atomic
     def post(self, request):
-        try:
-            ImportMobile(request)
-            return self.render_json_response({'status': 'true'})
-        except Exception, e:
-            print "************Error"
-            print str(e)
-            return self.render_json_response({'status': 'false'})
+        # try:
+        ImportMobile(request)
+        return self.render_json_response({'status': 'true'})
+        # except Exception, e:
+        #     print "************Error"
+        #     print str(e)
+        #     return self.render_json_response({'status': 'false'})
 
 
 class GetUserIdForMobView(JSONResponseMixin, APIView):
