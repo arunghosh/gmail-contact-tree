@@ -19,7 +19,8 @@ class ImportMobile:
     # def __update_last_contacted
 
     def __get_contact(self, contact_info):
-        number = contact_info['number'].replace('+91', '')
+        number = contact_info['number'][-10:]
+        # code = contact_info['number'][0:-10]
         name = contact_info['name']
         try:
             mobile_contact = MobileContact.objects.get(number=number, user_contact__user__id=self.user.id)
