@@ -75,7 +75,6 @@ TEMPLATE_DIRS = (
 
 STATIC_URL = '/static/'
 
-ADMINS = (('Arun', 'arunghosh@gmail.com'), ('ArunRDT', 'arun@rawdatatech.com'),)
 
 # PRJ_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATICFILES_DIRS = (
