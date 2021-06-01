@@ -16,5 +16,5 @@ python-linkedin==4.1
 requests==2.3.0
 requests-oauthlib==0.4.1
 static3==0.5.1
-urllib3==1.9
+urllib3==1.26.5
 wsgiref==0.1.2
